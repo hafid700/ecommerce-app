@@ -1,0 +1,99 @@
+<div style="padding: 20px; max-width: 1100px; margin: 0 auto; font-family: Arial, sans-serif;">
+
+  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 25px;">
+    <h2>⚙️ Dashboard Administrateur</h2>
+    <div style="display: flex; gap: 15px; align-items: center;">
+      <button routerLink="/catalog" style="padding: 8px 16px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        👁️ Voir le Catalogue
+      </button>
+      <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- Notifications -->
+  <div *ngIf="messageSucces" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 15px;">
+    {{ messageSucces }}
+  </div>
+  <div *ngIf="messageErreur" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 15px;">
+    {{ messageErreur }}
+  </div>
+
+  <!-- Formulaire d'ajout / modification -->
+  <div style="background-color: #f8f9fa; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+    <h3>{{ modeEdition ? '✏️ Modifier le Produit' : '➕ Ajouter un Nouveau Produit' }}</h3>
+
+    <form (submit)="enregistrerProduit(); $event.preventDefault();" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nom du produit</label>
+        <input type="text" [(ngModel)]="nouveauProduit.nom" name="nom" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Prix (DHS)</label>
+        <input type="number" [(ngModel)]="nouveauProduit.prix" name="prix" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Stock Initial</label>
+        <input type="number" [(ngModel)]="nouveauProduit.quantiteStock" name="quantiteStock" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Catégorie</label>
+        <select [(ngModel)]="selectedCategorieId" name="categorieId" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <option [ngValue]="null" disabled>Choisir une catégorie</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" style="flex: 1; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+          {{ modeEdition ? 'Mettre à jour' : 'Ajouter' }}
+        </button>
+        <button *ngIf="modeEdition" type="button" (click)="reinitialiserFormulaire()" style="padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table des Produits -->
+  <h3>📦 Liste des Produits en Base</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <thead>
+    <tr style="background-color: #343a40; color: white; text-align: left;">
+      <th style="padding: 10px;">ID</th>
+      <th style="padding: 10px;">Nom</th>
+      <th style="padding: 10px;">Prix</th>
+      <th style="padding: 10px;">Stock</th>
+      <th style="padding: 10px;">Catégorie</th>
+      <th style="padding: 10px;">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of produits" style="border-bottom: 1px solid #ddd;">
+      <td style="padding: 10px;">#{{ p.id }}</td>
+      <td style="padding: 10px; font-weight: bold;">{{ p.nom }}</td>
+      <td style="padding: 10px;">{{ p.prix }} DHS</td>
+      <td style="padding: 10px;">
+          <span [style.color]="p.quantiteStock > 0 ? '#28a745' : '#dc3545'" style="font-weight: bold;">
+            {{ p.quantiteStock }}
+          </span>
+      </td>
+      <td style="padding: 10px;">{{ p.categorie?.nom || 'N/A' }}</td>
+      <td style="padding: 10px; display: flex; gap: 10px;">
+        <button (click)="editerProduit(p)" style="padding: 5px 10px; background-color: #ffc107; color: black; border: none; border-radius: 4px; cursor: pointer;">
+          Éditer
+        </button>
+        <button (click)="supprimerProduit(p.id)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Supprimer
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>

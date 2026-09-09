@@ -1,0 +1,73 @@
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto; font-family: Arial, sans-serif;">
+
+  <!-- Bouton Accès Panier -->
+  <button routerLink="/cart" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+    🛒 Panier ({{ cartService.getNombreArticles() }})
+  </button>
+
+  <!-- Bar de navigation du catalogue -->
+  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+    <h2 style="margin: 0; color: #333;">🛍️ Catalogue Produits</h2>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span style="font-weight: bold; color: #555;">
+        Utilisateur : {{ (authService.currentUser$ | async)?.username }}
+      </span>
+      <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- Filtres par catégories -->
+  <div style="margin-bottom: 25px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <strong>Catégories :</strong>
+    <button
+      (click)="filtrer(null)"
+      [style.background-color]="selectedCategorieId === null ? '#007bff' : '#f8f9fa'"
+      [style.color]="selectedCategorieId === null ? 'white' : '#333'"
+      style="padding: 6px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+      Toutes
+    </button>
+    <button
+      *ngFor="let cat of categories"
+      (click)="filtrer(cat.id!)"
+      [style.background-color]="selectedCategorieId === cat.id ? '#007bff' : '#f8f9fa'"
+      [style.color]="selectedCategorieId === cat.id ? 'white' : '#333'"
+      style="padding: 6px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+      {{ cat.nom }}
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="loading" style="text-align: center; font-size: 1.2rem; margin: 50px 0; color: #666;">
+    Chargement des articles...
+  </div>
+
+  <!-- Grille de cartes produits -->
+  <div *ngIf="!loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+    <div *ngFor="let p of produitsFiltres" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between; background-color: #fff;">
+      <div>
+        <span style="background-color: #e9ecef; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; color: #495057; font-weight: bold; text-transform: uppercase;">
+          {{ p.categorie ? p.categorie.nom : 'Général' }}
+        </span>
+        <h3 style="margin: 12px 0 8px 0; font-size: 1.15rem; color: #222;">{{ p.nom }}</h3>
+        <p style="font-size: 1.3rem; font-weight: bold; color: #28a745; margin: 8px 0;">
+          {{ p.prix }} DHS
+        </p>
+        <p [style.color]="p.quantiteStock > 0 ? '#6c757d' : '#dc3545'" style="font-size: 0.85rem; margin-bottom: 15px;">
+          {{ p.quantiteStock > 0 ? 'En stock (' + p.quantiteStock + ')' : 'Rupture de stock' }}
+        </p>
+      </div>
+
+      <button
+        (click)="ajouterAuPanier(p)"
+        [disabled]="p.quantiteStock <= 0"
+        style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 0.95rem;"
+        [style.opacity]="p.quantiteStock <= 0 ? '0.5' : '1'"
+        [style.cursor]="p.quantiteStock <= 0 ? 'not-allowed' : 'pointer'">
+        Ajouter au panier 🛒
+      </button>
+    </div>
+  </div>
+
+</div>

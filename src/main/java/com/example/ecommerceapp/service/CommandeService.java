@@ -1,10 +1,13 @@
 package com.example.ecommerceapp.service;
 
 
+import com.example.ecommerceapp.exception.ResourceNotFoundException;
+import com.example.ecommerceapp.exception.StockInsuffisantException;
 import com.example.ecommerceapp.model.*;
 import com.example.ecommerceapp.repository.ClientRepository;
 import com.example.ecommerceapp.repository.CommandeRepository;
 import com.example.ecommerceapp.repository.ProduitRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,20 +26,22 @@ public class CommandeService {
         this.clientRepository = clientRepository;
     }
 
+    @Transactional // Garantie l'atomicité : Tout passe ou Tout s'annule
     public Commande passerCommande(Commande commande) {
         commande.setDateCommande(LocalDateTime.now());
         commande.setStatut(StatusCommande.VALIDEE);
 
-        // 1. Charger et lier le Client si un ID est fourni
+        // 1. Charger le Client
         if (commande.getClient() != null && commande.getClient().getId() != null) {
             Long clientId = commande.getClient().getId();
             Client client = clientRepository.findById(clientId)
-                    .orElseThrow(() -> new RuntimeException("Client introuvable avec l'id : " + clientId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Client introuvable avec l'id : " + clientId));
             commande.setClient(client);
         }
 
-        // 2. Traitement des lignes de commande
         double totalCalcul = 0.0;
+
+        // 2. Traitement et Décrémentation du Stock
         if (commande.getLignes() != null) {
             for (LigneCommande ligne : commande.getLignes()) {
                 if (ligne.getProduit() == null || ligne.getProduit().getId() == null) {
@@ -45,8 +50,22 @@ public class CommandeService {
 
                 Long produitId = ligne.getProduit().getId();
                 Produit produitPersiste = produitRepository.findById(produitId)
-                        .orElseThrow(() -> new RuntimeException("Produit introuvable avec l'id : " + produitId));
+                        .orElseThrow(() -> new ResourceNotFoundException("Produit introuvable avec l'id : " + produitId));
 
+                // VERIFICATION DU STOCK
+                if (produitPersiste.getQuantiteStock() < ligne.getQuantite()) {
+                    throw new StockInsuffisantException(
+                            "Stock insuffisant pour le produit '" + produitPersiste.getNom() +
+                                    "'. Stock disponible: " + produitPersiste.getQuantiteStock() +
+                                    ", quantité demandée: " + ligne.getQuantite()
+                    );
+                }
+
+                // DECREMENTATION DU STOCK
+                produitPersiste.setQuantiteStock(produitPersiste.getQuantiteStock() - ligne.getQuantite());
+                produitRepository.save(produitPersiste); // Mise à jour du stock en BDD
+
+                // Liaisons et calculs
                 ligne.setProduit(produitPersiste);
                 ligne.setPrixUnitaire(produitPersiste.getPrix());
                 ligne.setCommande(commande);
