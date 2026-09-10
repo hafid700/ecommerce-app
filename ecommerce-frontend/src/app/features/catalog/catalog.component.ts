@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductService, Produit, Categorie } from '../../core/services/product.service';
 import { AuthService } from '../../core/services/auth.service';
 import {Router, RouterLink} from '@angular/router';
@@ -8,7 +9,7 @@ import {CartService} from "../../core/services/cart.service";
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule,FormsModule, RouterLink],
   templateUrl: './catalog.component.html'
 })
 export class CatalogComponent implements OnInit {
@@ -17,6 +18,11 @@ export class CatalogComponent implements OnInit {
   categories: Categorie[] = [];
   selectedCategorieId: number | null| undefined = null;
   loading = true;
+
+  // 🔍 Variables de Recherche & Pagination
+  searchTerm: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 6; // Nombre de produits par page
 
   constructor(
     private productService: ProductService,
@@ -49,6 +55,29 @@ export class CatalogComponent implements OnInit {
     });
   }
 
+  // 🔍 Applique à la fois le filtre par catégorie ET la recherche par mot-clé
+  appliquerFiltres(): void {
+    this.currentPage = 1; // Réinitialise à la 1ère page lors d'une recherche/filtrage
+
+    this.produitsFiltres = this.produits.filter(p => {
+      // 1. Filtre Categorie
+      const matchCategorie = !this.selectedCategorieId ||
+        (p.categorie && p.categorie.id === this.selectedCategorieId);
+
+      // 2. Filtre Recherche texte
+      const matchRecherche = !this.searchTerm ||
+        p.nom.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      return matchCategorie && matchRecherche;
+    });
+  }
+
+  filtrerCategorie(categorieId: number | null | undefined): void {
+    this.selectedCategorieId = categorieId;
+    this.appliquerFiltres();
+  }
+
+
   filtrer(categorieId: number | null | undefined): void {
     this.selectedCategorieId = categorieId;
 
@@ -60,6 +89,27 @@ export class CatalogComponent implements OnInit {
       );
     }
   }
+
+  onSearchChange(): void {
+    this.appliquerFiltres();
+  }
+
+  // 📄 Getters pour la Pagination
+  get produitsPagines(): Produit[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.produitsFiltres.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.produitsFiltres.length / this.itemsPerPage) || 1;
+  }
+
+  changerPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
 
   ajouterAuPanier(produit: Produit): void {
     this.cartService.ajouterProduit(produit);

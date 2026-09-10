@@ -1,1 +1,36 @@
-<p>register works!</p>
+<div style="max-width: 400px; margin: 50px auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+  <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Créer un Compte</h2>
+
+  <div *ngIf="messageSucces" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem;">
+    {{ messageSucces }}
+  </div>
+
+  <div *ngIf="errorMessage" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem;">
+    {{ errorMessage }}
+  </div>
+
+  <form (submit)="onRegister($event)">
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Nom d'utilisateur</label>
+      <input type="text" [(ngModel)]="user.username" name="username" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Adresse Email</label>
+      <input type="email" [(ngModel)]="user.email" name="email" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Mot de passe</label>
+      <input type="password" [(ngModel)]="user.password" name="password" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+    </div>
+
+    <button type="submit" [disabled]="loading" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+      {{ loading ? 'Création en cours...' : 'S\'inscrire' }}
+    </button>
+  </form>
+
+  <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
+    Déjà inscrit ? <a routerLink="/login" style="color: #007bff; text-decoration: none; font-weight: bold;">Se connecter</a>
+  </p>
+</div>

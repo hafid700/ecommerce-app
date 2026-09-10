@@ -1,72 +1,101 @@
-# 🛒 E-Commerce Back-End API (Spring Boot 3 & PostgreSQL)
+# 🛒 Full-Stack E-Commerce Platform (Spring Boot 3 & Angular 17)
 
-API REST complète et professionnelle pour une plateforme d'e-commerce, développée avec **Spring Boot 3**, **Spring Data JPA**, et **PostgreSQL**.
+Plateforme e-commerce professionnelle, robuste et sécurisée. Elle se compose d'une **API REST Spring Boot 3** reliée à **PostgreSQL** et d'une application **Angular 17 Standalone** avec rendu fluide et réactif.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
 
-* **Java 17+**
-* **Spring Boot 3** (Spring Web, Spring Data JPA)
-* **PostgreSQL**
-* **Hibernate / JPA**
-* **Jackson JSON** (Gestion des relations bidirectionnelles avec `@JsonManagedReference` & `@JsonBackReference`)
+### **Back-End (Spring Boot 3)**
+* **Java 17+** & **Spring Boot 3** (Spring Web, Spring Security)
+* **Spring Data JPA** & **Hibernate**
+* **PostgreSQL** (Base de données relationnelle)
+* **JWT (JSON Web Token)** (Authentification stateless & Role-Based Access Control)
 * **Maven**
 
----
-
-## 📐 Architecture & Modèle de Données
-
-L'application repose sur une architecture N-Tiers (Controller -> Service -> Repository -> Entity) et gère les entités suivantes :
-
-* **`Categorie`** : Libellé et regroupement des produits.
-* **`Produit`** : Nom, Prix, et association à une Categorie.
-* **`Client`** : Nom, Email, et historique des commandes.
-* **`Commande`** : Date, Statut (`EN_ATTENTE`, `VALIDEE`, `PAYEE`, `EXPEDIEE`, `LIVREE`, `ANNULEE`), Total, et association au Client.
-* **`LigneCommande`** : Détail des articles commandés, quantités et prix unitaires enregistrés lors de la transaction.
+### **Front-End (Angular 17+)**
+* **Angular 17+** (Architecture **Standalone Components**)
+* **RxJS** & **BehaviorSubject** (Gestion de l'état réactif et panier)
+* **Angular Router** & **HTTP Interceptor** (Injection automatique du Token JWT)
+* **SSR / Platform Checks** (Compatibilité Node.js et navigateur)
 
 ---
 
-## 🌐 Endpoints de l'API
+## 📐 Modèle de Données & Entités Core
 
-### 📁 Catégories
-* `GET /categories` - Lister toutes les catégories
-* `POST /categories` - Créer une catégorie
-* `PUT /categories/{id}` - Modifier une catégorie
-* `DELETE /categories/{id}` - Supprimer une catégorie
+L'application repose sur une architecture N-Tiers (`Controller -> Service -> Repository -> Entity`) :
 
-### 📦 Produits
-* `GET /produits` - Lister tous les produits
-* `GET /produits/categorie/{id}` - Obtenir les produits d'une catégorie
-* `POST /produits` - Créer un produit
-* `PUT /produits/{id}` - Mettre à jour un produit
-* `DELETE /produits/{id}` - Supprimer un produit
-
-### 👤 Clients
-* `POST /clients` - Enregistrer un nouveau client
-* `GET /clients` - Lister tous les clients
-
-### 🛒 Commandes
-* `POST /commandes` - Validation du panier et enregistrement de la commande
-* `GET /commandes` - Consulter l'historique de toutes les commandes
+* **User / AppUser** : Informations de compte, rôle (`ROLE_USER`, `ROLE_ADMIN`) et authentification.
+* **Categorie** : Libellé et regroupement logique des produits.
+* **Produit** : Nom, Prix, Quantité en Stock, et association à une `Categorie`.
+* **Client** : Profil client avec coordonnées et historique d'achats.
+* **Commande** : Date, Statut, Total et association au `Client`.
+* **LigneCommande** : Snapshot du produit, prix unitaire et quantité demandée lors du checkout.
 
 ---
 
-## 🧪 Exemple de Requête : Passer une Commande
+## ✨ Fonctionnalités Clés Implémentées
 
-**`POST /commandes`**
+### 🌐 **Espace Public & Client**
+* **Navigation Libre :** Consultation du catalogue produits et filtrage par catégorie sans authentification obligatoire.
+* **Recherche & Pagination :** Recherche dynamique par mot-clé et navigation paginée par paquets de produits.
+* **Panier Réactif :** Ajout d'articles, modification des quantités, contrôle des stocks max et persistance dans le `localStorage`.
+* **Checkout Sécurisé :** Redirection vers l'authentification/inscription avant validation finale de la commande et décrémentation automatique du stock en BDD.
+* **Dashboard Client :** Consultation du profil et historique détaillé de toutes les commandes passées.
+
+### ⚙️ **Espace Administrateur**
+* **Protection par Guard (`adminGuard`) :** Accès strictement restreint aux utilisateurs ayant le rôle `ROLE_ADMIN`.
+* **Gestion du Catalogue (CRUD) :** Ajout, modification, réapprovisionnement des stocks et suppression de produits.
+
+---
+
+## 🌐 Endpoints de l'API REST Back-End
+
+### 🔐 Authentification (`/auth`)
+* `POST /auth/register` : Inscription d'un nouveau compte client.
+* `POST /auth/login` : Authentification et génération du Token JWT.
+
+### 📁 Catégories (`/categories`)
+* `GET /categories` : Lister toutes les catégories (Public).
+* `POST /categories` : Créer une catégorie (`ROLE_ADMIN`).
+* `PUT /categories/{id}` : Modifier une catégorie (`ROLE_ADMIN`).
+* `DELETE /categories/{id}` : Supprimer une catégorie (`ROLE_ADMIN`).
+
+### 📦 Produits (`/produits`)
+* `GET /produits` : Lister tous les produits (Public).
+* `GET /produits/categorie/{id}` : Filtrer les produits par catégorie (Public).
+* `POST /produits` : Créer un nouveau produit (`ROLE_ADMIN`).
+* `PUT /produits/{id}` : Mettre à jour un produit / ajuster le stock (`ROLE_ADMIN`).
+* `DELETE /produits/{id}` : Supprimer un produit (`ROLE_ADMIN`).
+
+### 🛒 Commandes & Clients (`/commandes`, `/clients`)
+* `POST /commandes` : Valider un panier et enregistrer la commande (Authentifié).
+* `GET /commandes/client/{clientId}` : Obtenir l'historique des commandes d'un client.
+* `GET /commandes` : Consulter toutes les commandes du système (`ROLE_ADMIN`).
+
+---
+
+## 🧪 Exemple de Payload JSON : Passer une Commande
+
+`POST /api/commandes` (Header : `Authorization: Bearer <JWT_TOKEN>`)
 
 ```json
 {
-    "client": {
+  "client": {
+    "id": 1
+  },
+  "lignes": [
+    {
+      "quantite": 2,
+      "produit": {
         "id": 1
+      }
     },
-    "lignes": [
-        {
-            "quantite": 2,
-            "produit": {
-                "id": 1
-            }
-        }
-    ]
+    {
+      "quantite": 1,
+      "produit": {
+        "id": 4
+      }
+    }
+  ]
 }

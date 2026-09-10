@@ -83,5 +83,18 @@ public class CommandeService {
     }
 
 
+    public List<Commande> obtenirCommandesClient(Long clientId) {
+
+        // Vérifier que le client existe
+        clientRepository.findById(clientId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Client introuvable avec l'id : " + clientId
+                        )
+                );
+
+        return commandeRepository.findByClientId(clientId);
+    }
+
 
 }

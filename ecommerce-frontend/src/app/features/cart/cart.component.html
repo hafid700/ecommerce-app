@@ -1,21 +1,51 @@
 <div style="padding: 20px; max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
 
+  <!-- En-tête -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h2>🛒 Mon Panier</h2>
-    <button routerLink="/catalog" style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+
+    <button
+      routerLink="/catalog"
+      style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
       ← Continuer mes achats
     </button>
   </div>
 
-  <div *ngIf="(cartService.items$ | async)?.length === 0" style="text-align: center; padding: 40px; border: 1px dashed #ccc; border-radius: 8px;">
-    <p style="font-size: 1.2rem; color: #666;">Votre panier est vide.</p>
-    <button routerLink="/catalog" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+  <!-- Messages de notification -->
+  <div
+    *ngIf="messageSucces"
+    style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
+    {{ messageSucces }}
+  </div>
+
+  <div
+    *ngIf="messageErreur"
+    style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
+    {{ messageErreur }}
+  </div>
+
+  <!-- Panier vide -->
+  <div
+    *ngIf="(cartService.items$ | async)?.length === 0 && !messageSucces"
+    style="text-align: center; padding: 40px; border: 1px dashed #ccc; border-radius: 8px;">
+
+    <p style="font-size: 1.2rem; color: #666;">
+      Votre panier est vide.
+    </p>
+
+    <button
+      routerLink="/catalog"
+      style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
       Découvrir nos produits
     </button>
   </div>
 
+  <!-- Contenu du panier -->
   <div *ngIf="((cartService.items$ | async) ?? []).length > 0">
+
+    <!-- Tableau des produits -->
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+
       <thead>
       <tr style="border-bottom: 2px solid #ddd; text-align: left;">
         <th style="padding: 10px;">Produit</th>
@@ -25,34 +55,98 @@
         <th style="padding: 10px;">Action</th>
       </tr>
       </thead>
+
       <tbody>
-      <tr *ngFor="let item of (cartService.items$ | async)" style="border-bottom: 1px solid #eee;">
-        <td style="padding: 10px; font-weight: bold;">{{ item.produit.nom }}</td>
-        <td style="padding: 10px;">{{ item.produit.prix }} DHS</td>
-        <td style="padding: 10px;">
-          <button (click)="modifierQuantite(item, -1)" style="padding: 2px 8px;">-</button>
-          <span style="margin: 0 10px; font-weight: bold;">{{ item.quantite }}</span>
-          <button (click)="modifierQuantite(item, 1)" style="padding: 2px 8px;">+</button>
+
+      <tr
+        *ngFor="let item of (cartService.items$ | async)"
+        style="border-bottom: 1px solid #eee;">
+
+        <!-- Produit -->
+        <td style="padding: 10px; font-weight: bold;">
+          {{ item.produit.nom }}
         </td>
+
+        <!-- Prix -->
+        <td style="padding: 10px;">
+          {{ item.produit.prix }} DHS
+        </td>
+
+        <!-- Quantité -->
+        <td style="padding: 10px;">
+
+          <button
+            (click)="modifierQuantite(item, -1)"
+            style="padding: 2px 8px;">
+            -
+          </button>
+
+          <span style="margin: 0 10px; font-weight: bold;">
+              {{ item.quantite }}
+            </span>
+
+          <button
+            (click)="modifierQuantite(item, 1)"
+            style="padding: 2px 8px;">
+            +
+          </button>
+
+        </td>
+
+        <!-- Total produit -->
         <td style="padding: 10px; font-weight: bold; color: #28a745;">
           {{ item.produit.prix * item.quantite }} DHS
         </td>
+
+        <!-- Suppression -->
         <td style="padding: 10px;">
-          <button (click)="supprimer(item)" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+          <button
+            (click)="supprimer(item)"
+            style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
             Supprimer
           </button>
         </td>
+
       </tr>
+
       </tbody>
     </table>
 
-    <!-- Total et Validation -->
-    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
-      <h3 style="margin: 0;">Total du panier : <span style="color: #28a745;">{{ cartService.getCalculerTotal() }} DHS</span></h3>
-      <button style="padding: 12px 24px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1.1rem; cursor: pointer;">
-        Valider la commande (Passer à la Phase 8) →
+    <!-- Total et validation -->
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+
+      <h3 style="margin: 0;">
+        Total du panier :
+        <span style="color: #28a745;">
+          {{ cartService.getCalculerTotal() }} DHS
+        </span>
+      </h3>
+
+      <button
+        (click)="validerCommande()"
+        [disabled]="loading"
+        [style.background-color]="authService.isLoggedIn() ? '#28a745' : '#ffc107'"
+        style="padding: 12px 24px; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1.1rem; cursor: pointer;">
+
+        <span *ngIf="loading">
+          Traitement en cours...
+        </span>
+
+        <span *ngIf="!loading && authService.isLoggedIn()">
+          Valider la commande 💳
+        </span>
+
+        <span
+          *ngIf="!loading && !authService.isLoggedIn()"
+          style="color: #212529;">
+          Se connecter pour valider 🔐
+        </span>
+
       </button>
+
     </div>
+
   </div>
 
 </div>

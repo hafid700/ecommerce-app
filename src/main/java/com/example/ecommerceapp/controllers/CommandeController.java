@@ -27,5 +27,11 @@ public class CommandeController {
         return commandeService.obtenirToutesLesCommandes();
     }
 
+    //obtenir les commandes d'un client
+    @GetMapping("/client/{clientId}")
+    public List<Commande> obtenirCommandesClient(@PathVariable Long clientId){
+        return commandeService.obtenirCommandesClient(clientId);
+    }
+
 
 }

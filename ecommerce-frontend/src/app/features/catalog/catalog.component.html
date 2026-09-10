@@ -1,51 +1,80 @@
 <div style="padding: 20px; max-width: 1200px; margin: 0 auto; font-family: Arial, sans-serif;">
 
-  <!-- Bouton Accès Panier -->
-  <button routerLink="/cart" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-    🛒 Panier ({{ cartService.getNombreArticles() }})
-  </button>
-
-  <!-- Bar de navigation du catalogue -->
+  <!-- En-tête Navigation -->
   <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
     <h2 style="margin: 0; color: #333;">🛍️ Catalogue Produits</h2>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <span style="font-weight: bold; color: #555;">
-        Utilisateur : {{ (authService.currentUser$ | async)?.username }}
-      </span>
-      <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-        Déconnexion
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button routerLink="/cart" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        🛒 Panier ({{ cartService.getNombreArticles() }})
       </button>
+
+      <ng-container *ngIf="authService.isLoggedIn(); else visitorButtons">
+        <button routerLink="/profile" style="padding: 8px 16px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+          👤 Mon Profil
+        </button>
+        <button *ngIf="authService.isAdmin()" routerLink="/admin" style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+          ⚙️ Admin
+        </button>
+        <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Déconnexion
+        </button>
+      </ng-container>
+
+      <ng-template #visitorButtons>
+        <button routerLink="/login" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+          Se connecter
+        </button>
+      </ng-template>
     </div>
   </header>
 
-  <!-- Filtres par catégories -->
-  <div style="margin-bottom: 25px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-    <strong>Catégories :</strong>
-    <button
-      (click)="filtrer(null)"
-      [style.background-color]="selectedCategorieId === null ? '#007bff' : '#f8f9fa'"
-      [style.color]="selectedCategorieId === null ? 'white' : '#333'"
-      style="padding: 6px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
-      Toutes
-    </button>
-    <button
-      *ngFor="let cat of categories"
-      (click)="filtrer(cat.id!)"
-      [style.background-color]="selectedCategorieId === cat.id ? '#007bff' : '#f8f9fa'"
-      [style.color]="selectedCategorieId === cat.id ? 'white' : '#333'"
-      style="padding: 6px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
-      {{ cat.nom }}
-    </button>
+  <!-- 🔍 Barre de Recherche et Filtres -->
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 25px; background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+
+    <!-- Champ de recherche par mot-clé -->
+    <div style="flex: 1; min-width: 280px;">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        placeholder="🔍 Rechercher un produit par nom..."
+        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;">
+    </div>
+
+    <!-- Filtres par catégorie -->
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <button
+        (click)="filtrerCategorie(null)"
+        [style.background-color]="selectedCategorieId === null ? '#007bff' : '#fff'"
+        [style.color]="selectedCategorieId === null ? 'white' : '#333'"
+        style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+        Toutes
+      </button>
+      <button
+        *ngFor="let cat of categories"
+        (click)="filtrerCategorie(cat.id)"
+        [style.background-color]="selectedCategorieId === cat.id ? '#007bff' : '#fff'"
+        [style.color]="selectedCategorieId === cat.id ? 'white' : '#333'"
+        style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+        {{ cat.nom }}
+      </button>
+    </div>
   </div>
 
-  <!-- Chargement -->
+  <!-- État de chargement -->
   <div *ngIf="loading" style="text-align: center; font-size: 1.2rem; margin: 50px 0; color: #666;">
     Chargement des articles...
   </div>
 
-  <!-- Grille de cartes produits -->
-  <div *ngIf="!loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
-    <div *ngFor="let p of produitsFiltres" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between; background-color: #fff;">
+  <!-- Aucun résultat trouvé -->
+  <div *ngIf="!loading && produitsFiltres.length === 0" style="text-align: center; padding: 40px; border: 1px dashed #ccc; border-radius: 8px; margin: 20px 0;">
+    <p style="font-size: 1.1rem; color: #666;">Aucun produit ne correspond à votre recherche "{{ searchTerm }}".</p>
+  </div>
+
+  <!-- 📦 Grille de cartes produits (Affichage par page) -->
+  <div *ngIf="!loading && produitsFiltres.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+    <div *ngFor="let p of produitsPagines" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between; background-color: #fff;">
       <div>
         <span style="background-color: #e9ecef; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; color: #495057; font-weight: bold; text-transform: uppercase;">
           {{ p.categorie ? p.categorie.nom : 'Général' }}
@@ -62,12 +91,36 @@
       <button
         (click)="ajouterAuPanier(p)"
         [disabled]="p.quantiteStock <= 0"
-        style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 0.95rem;"
-        [style.opacity]="p.quantiteStock <= 0 ? '0.5' : '1'"
-        [style.cursor]="p.quantiteStock <= 0 ? 'not-allowed' : 'pointer'">
+        style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 0.95rem; cursor: pointer;"
+        [style.opacity]="p.quantiteStock <= 0 ? '0.5' : '1'">
         Ajouter au panier 🛒
       </button>
     </div>
+  </div>
+
+  <!-- 📄 Barre de Pagination -->
+  <div *ngIf="!loading && totalPages > 1" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+
+    <button
+      (click)="changerPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; cursor: pointer;"
+      [style.opacity]="currentPage === 1 ? '0.5' : '1'">
+      ← Précédent
+    </button>
+
+    <span style="font-weight: bold; color: #555;">
+      Page {{ currentPage }} sur {{ totalPages }}
+    </span>
+
+    <button
+      (click)="changerPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; cursor: pointer;"
+      [style.opacity]="currentPage === totalPages ? '0.5' : '1'">
+      Suivant →
+    </button>
+
   </div>
 
 </div>
