@@ -76,6 +76,7 @@ L'application repose sur une architecture N-Tiers (`Controller -> Service -> Rep
 ---
 
 ## 🧪 Exemple de Payload JSON : Passer une Commande
+e
 
 `POST /api/commandes` (Header : `Authorization: Bearer <JWT_TOKEN>`)
 
