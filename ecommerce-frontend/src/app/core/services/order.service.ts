@@ -12,9 +12,18 @@ export interface LigneCommande {
   };
 }
 
+export interface ClientInfo {
+  id?: number;
+  nom?: string;
+  email?: string;
+}
+
 export interface Commande {
   id: number;
   dateCommande: string;
+  statut?: string;
+  status?: string;
+  client?:ClientInfo;
   lignes: LigneCommande[];
 }
 
@@ -24,7 +33,11 @@ export interface LigneCommandeRequest {
 }
 
 export interface CommandeRequest {
-  client: { id: number };
+  client: {
+    id?: number
+    nom?: string;
+    email?: string;
+  };
   lignes: LigneCommandeRequest[];
 }
 
@@ -43,4 +56,19 @@ export class OrderService {
   getCommandesParClient(clientId: number): Observable<Commande[]> {
     return this.http.get<Commande[]>(`${this.apiUrl}/client/${clientId}`);
   }
+
+  getToutesLesCommandes(): Observable<Commande[]> {
+    return this.http.get<Commande[]>(this.apiUrl);
+  }
+
+  changerStatutCommande(commandeId: number, statut: string): Observable<Commande> {
+    return this.http.put<Commande>(`${this.apiUrl}/${commandeId}/statut`, { statut });
+  }
+
+  getCommandesParClientEmail(email: string): Observable<Commande[]> {
+    return this.http.get<Commande[]>(`${this.apiUrl}/client/email/${email}`);
+  }
+
+
+
 }

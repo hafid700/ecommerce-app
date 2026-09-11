@@ -54,8 +54,13 @@ export class CartComponent {
     this.messageErreur = '';
     this.messageSucces = '';
 
+    // 👈 Récupération dynamique de l'utilisateur connecté
+    const currentUser = this.authService.getCurrentUser();
+
     const commandePayload: CommandeRequest = {
-      client: { id: 1 }, // ID dynamique ou client #1
+      client: { nom: currentUser?.username || 'Client Connecté',
+        email: currentUser?.email || `${currentUser?.username}@ecommerce.com`
+      },
       lignes: parsedItems
         .filter(item => item.produit.id !== undefined)
         .map(item => ({

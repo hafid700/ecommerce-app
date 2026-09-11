@@ -32,9 +32,16 @@ export class UserDashboardComponent implements OnInit {
 
   chargerCommandes(): void {
     // Dans une version complète, on utilise l'ID de l'utilisateur connecté
-    const clientId = 1;
+    const currentUser = this.authService.getCurrentUser();
+    const userEmail = currentUser?.email || `${currentUser?.username}@ecommerce.com`;
 
-    this.orderService.getCommandesParClient(clientId).subscribe({
+    if (!userEmail) {
+      this.loading = false;
+      return;
+    }
+
+    // 👈 2. Appel dynamique avec le bon email
+    this.orderService.getCommandesParClientEmail(userEmail).subscribe({
       next: (data) => {
         this.commandes = data;
         this.loading = false;

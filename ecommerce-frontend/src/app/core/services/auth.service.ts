@@ -7,6 +7,14 @@ export interface AuthResponse {
   token: string;
   username: string;
   role: string;
+  clientId: number;
+}
+
+export interface UserApp {
+  id?: number;
+  username: string;
+  email: string;
+  role?: string;
 }
 
 @Injectable({
@@ -49,6 +57,15 @@ export class AuthService {
     );
   }
 
+  getCurrentUser(): { username: string; email?: string } | null {
+    const user = this.currentUserSubject.value; // Ou récupérer depuis localStorage/JWT
+    if (user) {
+      return user;
+    }
+    const savedUser = localStorage.getItem('auth_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  }
+
   logout(): void {
     if (this.isBrowser) {
       localStorage.removeItem('auth_token');
@@ -69,4 +86,9 @@ export class AuthService {
     const user = this.currentUserSubject.value;
     return user ? user.role === 'ROLE_ADMIN' : false;
   }
+
+  getTousLesUtilisateurs(): Observable<UserApp[]> {
+    return this.http.get<UserApp[]>('/api/users');
+  }
+
 }

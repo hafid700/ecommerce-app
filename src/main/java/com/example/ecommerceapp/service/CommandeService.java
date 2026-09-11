@@ -29,14 +29,35 @@ public class CommandeService {
     @Transactional // Garantie l'atomicité : Tout passe ou Tout s'annule
     public Commande passerCommande(Commande commande) {
         commande.setDateCommande(LocalDateTime.now());
-        commande.setStatut(StatusCommande.VALIDEE);
 
-        // 1. Charger le Client
-        if (commande.getClient() != null && commande.getClient().getId() != null) {
-            Long clientId = commande.getClient().getId();
-            Client client = clientRepository.findById(clientId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Client introuvable avec l'id : " + clientId));
-            commande.setClient(client);
+        if (commande.getStatut() == null) {
+            commande.setStatut(StatusCommande.EN_ATTENTE);
+        }
+
+        // 1. GESTION AUTOMATIQUE DU CLIENT
+        if (commande.getClient() != null) {
+            Client clientPersiste;
+
+            // CAS A : Recherche par ID si fourni
+            if (commande.getClient().getId() != null) {
+                Long clientId = commande.getClient().getId();
+                clientPersiste = clientRepository.findById(clientId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Client introuvable avec l'id : " + clientId));
+            }
+            // CAS B : Recherche ou création automatique par Email si l'ID n'est pas fourni
+            else if (commande.getClient().getEmail() != null) {
+                String email = commande.getClient().getEmail();
+                String nom = commande.getClient().getNom() != null ? commande.getClient().getNom() : "Client Anonyme";
+
+                clientPersiste = clientRepository.findByEmail(email)
+                        .orElseGet(() -> clientRepository.save(new Client(nom, email)));
+            } else {
+                throw new IllegalArgumentException("La commande doit comporter un client avec un ID ou un Email valide.");
+            }
+
+            commande.setClient(clientPersiste);
+        } else {
+            throw new IllegalArgumentException("Informations du client manquantes dans la commande.");
         }
 
         double totalCalcul = 0.0;
@@ -96,5 +117,19 @@ public class CommandeService {
         return commandeRepository.findByClientId(clientId);
     }
 
+
+    public List<Commande> findByClientEmail(String email) {
+        return commandeRepository.findByClientEmail(email);
+    }
+
+     @Transactional
+     public Commande changerStatus(Long commandeId,StatusCommande nouveauStatus){
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'id : " + commandeId));
+
+        commande.setStatut(nouveauStatus);
+
+        return commandeRepository.save(commande);
+     }
 
 }

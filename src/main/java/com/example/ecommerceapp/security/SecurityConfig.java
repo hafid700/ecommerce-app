@@ -38,6 +38,8 @@ public class SecurityConfig {
                         // Consultation publique du catalogue (GET)
                         .requestMatchers(HttpMethod.GET, "/produits/**", "/categories/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/users", "/users/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+
                         // Opérations Admin (POST, PUT, DELETE sur produits et catégories)
                         .requestMatchers(HttpMethod.POST, "/produits", "/produits/**", "/categories/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/produits","/produits/**", "/categories/**").hasAuthority("ROLE_ADMIN")

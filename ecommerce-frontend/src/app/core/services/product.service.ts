@@ -33,6 +33,14 @@ export class ProductService {
     return this.http.get<Categorie[]>(`${this.apiUrl}/categories`);
   }
 
+  ajouterCategorie(categorie: Categorie): Observable<Categorie> {
+    return this.http.post<Categorie>(`${this.apiUrl}/categories`, categorie);
+  }
+
+  supprimerCategorie(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/categories/${id}`);
+  }
+
   ajouterProduit(produit: Produit): Observable<Produit> {
     return this.http.post<Produit>(`${this.apiUrl}/produits`, produit);
   }

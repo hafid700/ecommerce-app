@@ -2,6 +2,7 @@ package com.example.ecommerceapp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -20,7 +21,7 @@ public class LigneCommande {
 
     @ManyToOne
     @JoinColumn(name = "commande_id")
-    @JsonBackReference
+    @JsonIgnore
     private Commande commande;
 
     public LigneCommande(){}
