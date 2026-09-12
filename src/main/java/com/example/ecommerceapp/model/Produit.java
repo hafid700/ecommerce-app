@@ -14,6 +14,8 @@ public class Produit {
 
     private Integer quantiteStock=0;
 
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;

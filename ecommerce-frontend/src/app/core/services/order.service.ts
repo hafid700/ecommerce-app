@@ -9,20 +9,23 @@ export interface LigneCommande {
     id: number;
     nom: string;
     prix: number;
+
   };
 }
 
 export interface ClientInfo {
   id?: number;
+  prenom?: string;
   nom?: string;
   email?: string;
+  telephone?: string;
+  adresse?: string;
 }
 
 export interface Commande {
   id: number;
   dateCommande: string;
   statut?: string;
-  status?: string;
   client?:ClientInfo;
   lignes: LigneCommande[];
 }
@@ -34,9 +37,12 @@ export interface LigneCommandeRequest {
 
 export interface CommandeRequest {
   client: {
-    id?: number
+    id?: number;
+    prenom?: string;
     nom?: string;
     email?: string;
+    telephone?: string;
+    adresse?: string;
   };
   lignes: LigneCommandeRequest[];
 }

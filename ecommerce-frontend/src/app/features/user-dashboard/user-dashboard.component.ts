@@ -33,7 +33,7 @@ export class UserDashboardComponent implements OnInit {
   chargerCommandes(): void {
     // Dans une version complète, on utilise l'ID de l'utilisateur connecté
     const currentUser = this.authService.getCurrentUser();
-    const userEmail = currentUser?.email || `${currentUser?.username}@ecommerce.com`;
+    const userEmail = currentUser?.email;
 
     if (!userEmail) {
       this.loading = false;

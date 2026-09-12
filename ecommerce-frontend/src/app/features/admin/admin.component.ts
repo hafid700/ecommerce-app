@@ -111,7 +111,7 @@ export class AdminComponent implements OnInit {
         // Mise à jour réactive immédiate de l'objet local
         const cmd = this.commandes.find(c => c.id === commandeId);
         if (cmd) {
-          cmd.status = nouveauStatut;
+          cmd.statut = nouveauStatut;
         }
 
         // Rechargement global pour garder les listes et les KPIs synchronisés
@@ -235,26 +235,42 @@ export class AdminComponent implements OnInit {
 // 1. Chiffre d'affaires total (Commandes VALIDEE, EXPEDIEE ou LIVREE)
   get chiffreAffairesTotal(): number {
     return this.commandes
-      .filter(c => c.status !== 'ANNULEE')
+      .filter(c => c.statut !== 'ANNULEE')
       .reduce((total, c) => total + this.calculerTotalCommande(c), 0);
   }
 
 // 2. Nombre de commandes par statut
   get nbCommandesValidees(): number {
-    return this.commandes.filter(c => c.status === 'VALIDEE' || c.status === 'LIVREE' || c.status === 'EXPEDIEE').length;
+    return this.commandes.filter(c => c.statut === 'VALIDEE' || c.statut === 'LIVREE' || c.statut === 'EXPEDIEE').length;
   }
 
   get nbCommandesEnAttente(): number {
-    return this.commandes.filter(c => c.status === 'EN_ATTENTE').length;
+    return this.commandes.filter(c => c.statut === 'EN_ATTENTE').length;
   }
 
   get nbCommandesAnnulees(): number {
-    return this.commandes.filter(c => c.status === 'ANNULEE').length;
+    return this.commandes.filter(c => c.statut === 'ANNULEE').length;
   }
 
 // 3. Alerte Stock Faible (Moins de 5 articles)
   get produitsAlerteStock(): Produit[] {
     return this.produits.filter(p => p.quantiteStock <= 5);
+  }
+
+  // 👥 --- STATISTIQUES CLIENTS / UTILISATEURS ---
+
+// Compte le nombre de commandes pour un utilisateur donné (par e-mail)
+  getNombreCommandesUser(emailUser: string): number {
+    if (!emailUser || !this.commandes) return 0;
+    return this.commandes.filter(c => c.client?.email?.toLowerCase() === emailUser.toLowerCase()).length;
+  }
+
+// Calcule le montant total dépensé par cet utilisateur
+  getTotalDepenseUser(emailUser: string): number {
+    if (!emailUser || !this.commandes) return 0;
+    return this.commandes
+      .filter(c => c.client?.email?.toLowerCase() === emailUser.toLowerCase() && c.statut !== 'ANNULEE')
+      .reduce((sum, c) => sum + this.calculerTotalCommande(c), 0);
   }
 
   logout(): void {

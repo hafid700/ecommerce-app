@@ -7,6 +7,8 @@ import com.example.ecommerceapp.model.*;
 import com.example.ecommerceapp.repository.ClientRepository;
 import com.example.ecommerceapp.repository.CommandeRepository;
 import com.example.ecommerceapp.repository.ProduitRepository;
+import com.example.ecommerceapp.repository.UtilisateurRepository;
+
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,45 +21,53 @@ public class CommandeService {
     private final CommandeRepository commandeRepository;
     private final ProduitRepository produitRepository;
     private final ClientRepository clientRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public CommandeService(CommandeRepository commandeRepository, ProduitRepository produitRepository, ClientRepository clientRepository){
+    public CommandeService(CommandeRepository commandeRepository, ProduitRepository produitRepository, ClientRepository clientRepository, UtilisateurRepository utilisateurRepository){
         this.commandeRepository=commandeRepository;
         this.produitRepository = produitRepository;
         this.clientRepository = clientRepository;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
-    @Transactional // Garantie l'atomicité : Tout passe ou Tout s'annule
+    @Transactional
     public Commande passerCommande(Commande commande) {
         commande.setDateCommande(LocalDateTime.now());
-
         if (commande.getStatut() == null) {
             commande.setStatut(StatusCommande.EN_ATTENTE);
         }
 
-        // 1. GESTION AUTOMATIQUE DU CLIENT
         if (commande.getClient() != null) {
-            Client clientPersiste;
+            Client clientReq = commande.getClient();
+            String email = clientReq.getEmail() != null ? clientReq.getEmail().trim().toLowerCase() : null;
 
-            // CAS A : Recherche par ID si fourni
-            if (commande.getClient().getId() != null) {
-                Long clientId = commande.getClient().getId();
-                clientPersiste = clientRepository.findById(clientId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Client introuvable avec l'id : " + clientId));
-            }
-            // CAS B : Recherche ou création automatique par Email si l'ID n'est pas fourni
-            else if (commande.getClient().getEmail() != null) {
-                String email = commande.getClient().getEmail();
-                String nom = commande.getClient().getNom() != null ? commande.getClient().getNom() : "Client Anonyme";
-
-                clientPersiste = clientRepository.findByEmail(email)
-                        .orElseGet(() -> clientRepository.save(new Client(nom, email)));
-            } else {
-                throw new IllegalArgumentException("La commande doit comporter un client avec un ID ou un Email valide.");
+            if (email == null || email.contains("undefined") || email.isBlank()) {
+                throw new IllegalArgumentException("Une adresse email valide est requise pour passer la commande.");
             }
 
+            // Recherche ou création du client
+            Client clientPersiste = clientRepository.findByEmail(email)
+                    .orElseGet(() -> {
+                        Client c = new Client();
+                        c.setEmail(email);
+                        utilisateurRepository.findByEmail(email).ifPresent(c::setUser);
+                        return c;
+                    });
+
+            // Mise à jour des coordonnées de livraison (COD)
+            clientPersiste.setPrenom(clientReq.getPrenom());
+            clientPersiste.setNom(clientReq.getNom());
+            clientPersiste.setTelephone(clientReq.getTelephone());
+            clientPersiste.setAdresse(clientReq.getAdresse());
+
+            if (clientPersiste.getUser() == null) {
+                utilisateurRepository.findByEmail(email).ifPresent(clientPersiste::setUser);
+            }
+
+            clientPersiste = clientRepository.save(clientPersiste);
             commande.setClient(clientPersiste);
         } else {
-            throw new IllegalArgumentException("Informations du client manquantes dans la commande.");
+            throw new IllegalArgumentException("Informations client requises.");
         }
 
         double totalCalcul = 0.0;

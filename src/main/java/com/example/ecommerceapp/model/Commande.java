@@ -2,6 +2,7 @@ package com.example.ecommerceapp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Commande {
 
     @Id
@@ -20,18 +22,19 @@ public class Commande {
     private LocalDateTime dateCommande;
 
     @Enumerated(EnumType.STRING)
-    private StatusCommande statut;
+    private StatusCommande statut = StatusCommande.EN_ATTENTE;
 
 
     private Double total=0.0;
 
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<LigneCommande> lignes = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="client_id")
     private Client client;
+
+
 
     public Commande() {
         this.dateCommande = LocalDateTime.now();

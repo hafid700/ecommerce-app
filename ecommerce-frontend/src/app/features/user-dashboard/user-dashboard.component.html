@@ -36,6 +36,21 @@
       <span>Total : <span style="color: #28a745;">{{ calculerTotalCommande(c) }} DHS</span></span>
     </div>
 
+    <!-- 🚚 Bloc Informations de Livraison (COD) -->
+    <div *ngIf="c.client" style="background-color: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; color: #495057;">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
+        <div *ngIf="c.client.prenom || c.client.nom">
+          👤 <strong>Destinataire :</strong> {{ c.client.prenom }} {{ c.client.nom }}
+        </div>
+        <div *ngIf="c.client.telephone">
+          📞 <strong>Téléphone :</strong> {{ c.client.telephone }}
+        </div>
+        <div *ngIf="c.client.adresse" style="flex-grow: 1;">
+          📍 <strong>Adresse :</strong> {{ c.client.adresse }}
+        </div>
+      </div>
+    </div>
+
     <!-- Articles de la commande -->
     <div style="padding: 15px;">
       <table style="width: 100%; border-collapse: collapse;">

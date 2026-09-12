@@ -24,6 +24,7 @@
     {{ messageErreur }}
   </div>
 
+
   <!-- Panier vide -->
   <div
     *ngIf="(cartService.items$ | async)?.length === 0 && !messageSucces"
@@ -147,6 +148,43 @@
 
     </div>
 
+
   </div>
+
+  <!-- Formulaire d'Expédition COD -->
+  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #dee2e6;">
+    <h4 style="margin-bottom: 15px; color: #333;">🚚 Informations de Livraison (Paiement à la livraison)</h4>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div>
+        <label style="font-weight: bold; font-size: 0.9rem;">Prénom *</label>
+        <input type="text" [(ngModel)]="livraison.prenom" placeholder="Votre prénom"
+               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+      </div>
+      <div>
+        <label style="font-weight: bold; font-size: 0.9rem;">Nom *</label>
+        <input type="text" [(ngModel)]="livraison.nom" placeholder="Votre nom"
+               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+      </div>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <label style="font-weight: bold; font-size: 0.9rem;">Téléphone (WhatsApp) *</label>
+      <input type="tel" [(ngModel)]="livraison.telephone" placeholder="06XXXXXXXX"
+             style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
+    </div>
+
+    <div style="margin-top: 15px;">
+      <label style="font-weight: bold; font-size: 0.9rem;">Adresse de livraison complète *</label>
+      <textarea [(ngModel)]="livraison.adresse" rows="3" placeholder="Quartier, Rue, N° d'appartement, Ville..."
+                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;"></textarea>
+    </div>
+  </div>
+
+  <button (click)="validerCommande()"
+          [disabled]="loading"
+          style="width: 100%; margin-top: 20px; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+    💵 Valider la commande (Paiement à la livraison)
+  </button>
 
 </div>

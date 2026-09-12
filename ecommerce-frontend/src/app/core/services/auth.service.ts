@@ -7,6 +7,7 @@ export interface AuthResponse {
   token: string;
   username: string;
   role: string;
+  email: string;
   clientId: number;
 }
 
@@ -50,20 +51,26 @@ export class AuthService {
       tap(response => {
         if (this.isBrowser) {
           localStorage.setItem('auth_token', response.token);
-          localStorage.setItem('auth_user', JSON.stringify(response));
+          localStorage.setItem('auth_user', JSON.stringify(response)); // 👈 Clé : 'auth_user'
         }
         this.currentUserSubject.next(response);
       })
     );
   }
 
-  getCurrentUser(): { username: string; email?: string } | null {
-    const user = this.currentUserSubject.value; // Ou récupérer depuis localStorage/JWT
-    if (user) {
-      return user;
+  getCurrentUser(): AuthResponse | null {
+    if (!this.isBrowser) return null;
+
+    // 👈 On lit exactement la même clé 'auth_user'
+    const userStr = localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user');
+    if (!userStr) return null;
+
+    try {
+      return JSON.parse(userStr);
+    } catch (e) {
+      console.error('Erreur de lecture du profil utilisateur :', e);
+      return null;
     }
-    const savedUser = localStorage.getItem('auth_user');
-    return savedUser ? JSON.parse(savedUser) : null;
   }
 
   logout(): void {

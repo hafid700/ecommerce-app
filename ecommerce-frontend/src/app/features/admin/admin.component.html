@@ -77,7 +77,6 @@
     <div *ngFor="let cmd of commandes" style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden;">
 
       <!-- En-tête de la commande -->
-      <!-- En-tête de la commande dans admin.component.html -->
       <div style="background-color: #343a40; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
 
         <div>
@@ -85,14 +84,13 @@
 
           <!-- 📅 Date et Heure -->
           <span style="font-size: 0.85rem; color: #17a2b8; margin-left: 15px;">
-      📅 {{ cmd.dateCommande ? (cmd.dateCommande | date:'dd/MM/yyyy HH:mm') : 'Date N/A' }}
-    </span>
+          📅 {{ cmd.dateCommande ? (cmd.dateCommande | date:'dd/MM/yyyy HH:mm') : 'Date N/A' }}
+        </span>
 
-          <!-- 👤 Informations Client (Nom & Email) -->
+          <!-- 👤 Informations de base Client -->
           <div style="font-size: 0.85rem; color: #ccc; margin-top: 4px;">
-            👤 Client : <strong>{{ cmd.client?.nom || 'Client Anonyme' }}</strong>
+            👤 Client : <strong>{{ cmd.client?.prenom }} {{ cmd.client?.nom || 'Client Anonyme' }}</strong>
             <span *ngIf="cmd.client?.email">({{ cmd.client?.email }})</span>
-            <span *ngIf="!cmd.client?.nom && !cmd.client?.email">ID #{{ cmd.client?.id }}</span>
           </div>
         </div>
 
@@ -107,9 +105,33 @@
           </select>
 
           <span style="font-weight: bold; color: #28a745; margin-left: 10px; font-size: 1.1rem;">
-      {{ calculerTotalCommande(cmd) }} DHS
-    </span>
+          {{ calculerTotalCommande(cmd) }} DHS
+        </span>
         </div>
+
+      </div>
+
+      <!-- 🚚 Bloc Informations de Livraison (COD) & Action Agent WhatsApp -->
+      <div *ngIf="cmd.client" style="background-color: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-size: 0.9rem; color: #333; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; flex-grow: 1;">
+          <div>
+            📞 <strong>Téléphone :</strong>
+            <span style="font-weight: bold; color: #007bff;">{{ cmd.client.telephone || 'Non renseigné' }}</span>
+          </div>
+          <div style="flex-grow: 1;">
+            📍 <strong>Adresse de livraison :</strong>
+            <span>{{ cmd.client.adresse || 'Non renseignée' }}</span>
+          </div>
+        </div>
+
+        <!-- 💬 Bouton WhatsApp pour l'Agent Admin -->
+        <a *ngIf="cmd.client.telephone"
+           [href]="'https://wa.me/' + cmd.client.telephone + '?text=Bonjour%20' + (cmd.client.prenom || cmd.client.nom) + ',%20nous%20confirmons%20votre%20commande%20%23' + cmd.id + '%20de%20' + calculerTotalCommande(cmd) + '%20DHS.'"
+           target="_blank"
+           style="background-color: #25D366; color: white; padding: 6px 14px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          💬 Confirmer sur WhatsApp
+        </a>
 
       </div>
 
@@ -270,6 +292,8 @@
         <th style="padding: 10px;">Nom d'utilisateur</th>
         <th style="padding: 10px;">Email</th>
         <th style="padding: 10px;">Rôle</th>
+        <th style="padding: 12px; text-align: center;">Commandes Passées</th>
+        <th style="padding: 12px; text-align: right;">Total Dépensé</th>
       </tr>
       </thead>
       <tbody>
@@ -284,6 +308,19 @@
             {{ u.role || 'ROLE_USER' }}
           </span>
         </td>
+
+        <!-- 📦 Nombre de commandes passées -->
+        <td style="padding: 12px; text-align: center;">
+          <span style="background-color: #e9ecef; color: #495057; padding: 4px 10px; border-radius: 12px; font-weight: bold;">
+            📦 {{ getNombreCommandesUser(u.email) }}
+          </span>
+        </td>
+
+        <!-- 💰 Total dépensé par ce client -->
+        <td style="padding: 12px; text-align: right; font-weight: bold; color: #28a745;">
+          {{ getTotalDepenseUser(u.email) }} DHS
+        </td>
+
       </tr>
       </tbody>
     </table>

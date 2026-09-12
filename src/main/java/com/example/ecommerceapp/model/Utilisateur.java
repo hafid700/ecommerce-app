@@ -1,5 +1,6 @@
 package com.example.ecommerceapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +22,10 @@ public class Utilisateur {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // 👈 OBLIGATOIRE : Évite la boucle infinie JSON lors de la sérialisation
+    private Client client;
 
     public Utilisateur(){}
 
@@ -69,5 +74,16 @@ public class Utilisateur {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+        if (client != null && client.getUser() != this) {
+            client.setUser(this);
+        }
     }
 }
