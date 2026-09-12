@@ -68,5 +68,10 @@ public class ProduitService {
         produitRepository.deleteById(id);
     }
 
+    public Produit obtenirProduitParId(Long id) {
+        return produitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produit non trouvé avec l'ID : " + id));
+    }
+
 
 }

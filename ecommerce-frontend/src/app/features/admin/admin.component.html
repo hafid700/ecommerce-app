@@ -209,77 +209,142 @@
       <h3>{{ modeEdition ? '✏️ Modifier le Produit' : '➕ Ajouter un Nouveau Produit' }}</h3>
 
       <form (submit)="enregistrerProduit(); $event.preventDefault();" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+
         <div>
-          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nom du produit</label>
-          <input type="text" [(ngModel)]="nouveauProduit.nom" name="nom" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nom du produit *</label>
+          <input type="text" [(ngModel)]="nouveauProduit.nom" name="nom" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
         </div>
 
         <div>
-          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Prix (DHS)</label>
-          <input type="number" [(ngModel)]="nouveauProduit.prix" name="prix" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Prix (DHS) *</label>
+          <input type="number" [(ngModel)]="nouveauProduit.prix" name="prix" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
         </div>
 
         <div>
-          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Stock Initial</label>
-          <input type="number" [(ngModel)]="nouveauProduit.quantiteStock" name="quantiteStock" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Stock Initial *</label>
+          <input type="number" [(ngModel)]="nouveauProduit.quantiteStock" name="quantiteStock" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
         </div>
 
         <div>
-          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Catégorie</label>
-          <select [(ngModel)]="selectedCategorieId" name="categorieId" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Catégorie *</label>
+          <select [(ngModel)]="selectedCategorieId" name="categorieId" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
             <option [ngValue]="null" disabled>Choisir une catégorie</option>
             <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
           </select>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-          <button type="submit" style="flex: 1; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-            {{ modeEdition ? 'Mettre à jour' : 'Ajouter' }}
-          </button>
-          <button *ngIf="modeEdition" type="button" (click)="reinitialiserFormulaire()" style="padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        <!-- 📝 Champ Description (Largeur complète) -->
+        <div style="grid-column: 1 / -1;">
+          <label style="display: block; font-weight: bold; margin-bottom: 5px;">Description détaillée</label>
+          <textarea [(ngModel)]="nouveauProduit.description" name="description" rows="3" placeholder="Description courte du produit..." style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+        </div>
+
+        <!-- 🖼️ Champ Upload & URL Image (Largeur complète) -->
+        <div style="grid-column: 1 / -1; background-color: #fff; padding: 15px; border: 1px dashed #ced4da; border-radius: 6px;">
+          <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #495057;">📷 Photo du produit</label>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: center;">
+            <!-- Option A : Téléverser un fichier local -->
+            <div style="margin-bottom: 15px;">
+              <label style="font-weight: bold; display: block; margin-bottom: 5px;">Photo du produit (Fichier local) :</label>
+
+              <input type="file" (change)="onFileSelected($event, nouveauProduit)" accept="image/*" style="margin-bottom: 10px;">
+
+              <!-- Aperçu dynamique -->
+              <!-- Aperçu dynamique de la photo -->
+              <div *ngIf="nouveauProduit.imageUrl" style="margin-top: 12px; display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef;">
+
+                <img [src]="nouveauProduit.imageUrl"
+                     (error)="$any($event.target).src = 'https://via.placeholder.com/150?text=Erreur+Chargement'"
+                     alt="Aperçu du produit"
+                     style="height: 70px; width: 70px; object-fit: contain; border: 1px solid #ced4da; border-radius: 6px; background: #fff;">
+
+                <div>
+                  <span style="font-size: 0.85rem; color: #28a745; font-weight: bold; display: block;">✔️ Image configurée avec succès !</span>
+                  <small style="font-size: 0.75rem; color: #6c757d; word-break: break-all;">{{ nouveauProduit.imageUrl }}</small>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Option B : URL Web directe -->
+            <div>
+              <span style="font-size: 0.85rem; color: #6c757d; display: block; margin-bottom: 4px;">Ou coller une URL d'image :</span>
+              <input type="text" [(ngModel)]="nouveauProduit.imageUrl" name="imageUrl" placeholder="https://..." style="width: 100%; padding: 7px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+          </div>
+
+          <!-- Aperçu dynamique de la photo -->
+          <div *ngIf="nouveauProduit.imageUrl" style="margin-top: 12px; display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 8px; border-radius: 4px;">
+            <img [src]="nouveauProduit.imageUrl" alt="Aperçu" style="height: 60px; width: 60px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background: #fff;">
+            <span style="font-size: 0.85rem; color: #28a745; font-weight: bold;">✔️ Image configurée avec succès !</span>
+          </div>
+        </div>
+
+        <!-- Boutons de validation -->
+        <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 10px;">
+          <button type="submit"
+                  [disabled]="uploadingImage"
+                  style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            {{ uploadingImage ? '⏳ Upload de l\'image...' : (modeEdition ? '🔄 Mettre à jour' : '➕ Ajouter') }}
+            </button>
+          <button *ngIf="modeEdition" type="button" (click)="reinitialiserFormulaire()" style="padding: 12px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
             Annuler
           </button>
         </div>
+
       </form>
     </div>
+  </div>
 
-    <!-- Table des Produits -->
-    <h3>📦 Liste des Produits en Base</h3>
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-      <thead>
-      <tr style="background-color: #343a40; color: white; text-align: left;">
-        <th style="padding: 10px;">ID</th>
-        <th style="padding: 10px;">Nom</th>
-        <th style="padding: 10px;">Prix</th>
-        <th style="padding: 10px;">Stock</th>
-        <th style="padding: 10px;">Catégorie</th>
-        <th style="padding: 10px;">Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let p of produits" style="border-bottom: 1px solid #ddd;">
-        <td style="padding: 10px;">#{{ p.id }}</td>
-        <td style="padding: 10px; font-weight: bold;">{{ p.nom }}</td>
-        <td style="padding: 10px;">{{ p.prix }} DHS</td>
-        <td style="padding: 10px;">
-            <span [style.color]="p.quantiteStock > 0 ? '#28a745' : '#dc3545'" style="font-weight: bold;">
-              {{ p.quantiteStock }}
-            </span>
-        </td>
-        <td style="padding: 10px;">{{ p.categorie?.nom || 'N/A' }}</td>
-        <td style="padding: 10px; display: flex; gap: 10px;">
+  <!-- Table des Produits -->
+  <h3>📦 Liste des Produits en Base</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <thead>
+    <tr style="background-color: #343a40; color: white; text-align: left;">
+      <th style="padding: 10px;">Image</th>
+      <th style="padding: 10px;">ID</th>
+      <th style="padding: 10px;">Nom</th>
+      <th style="padding: 10px;">Prix</th>
+      <th style="padding: 10px;">Stock</th>
+      <th style="padding: 10px;">Catégorie</th>
+      <th style="padding: 10px;">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of produits" style="border-bottom: 1px solid #ddd; vertical-align: middle;">
+      <!-- 🖼️ Colonne Aperçu Image -->
+      <td style="padding: 10px;">
+        <img [src]="p.imageUrl || 'https://via.placeholder.com/50?text=No+Img'"
+             (error)="$any($event.target).src = 'https://via.placeholder.com/50?text=No+Img'"
+             [alt]="p.nom"
+             style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ced4da; background-color: #fff; display: block;">
+      </td>
+
+      <td style="padding: 10px;">#{{ p.id }}</td>
+      <td style="padding: 10px; font-weight: bold;">{{ p.nom }}</td>
+      <td style="padding: 10px;">{{ p.prix }} DHS</td>
+      <td style="padding: 10px;">
+        <span [style.color]="p.quantiteStock > 0 ? '#28a745' : '#dc3545'" style="font-weight: bold;">
+          {{ p.quantiteStock }}
+        </span>
+      </td>
+      <td style="padding: 10px;">{{ p.categorie?.nom || 'N/A' }}</td>
+      <td style="padding: 10px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
           <button (click)="editerProduit(p)" style="padding: 5px 10px; background-color: #ffc107; color: black; border: none; border-radius: 4px; cursor: pointer;">
             Éditer
           </button>
           <button (click)="supprimerProduit(p.id)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
             Supprimer
           </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 
   <!-- 👥 ONGLET 4 : GESTION DES UTILISATEURS -->
   <div *ngIf="activeTab === 'users'">
@@ -386,5 +451,3 @@
     </div>
 
   </div>
-
-</div>

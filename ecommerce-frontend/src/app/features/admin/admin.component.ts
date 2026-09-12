@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ProductService, Produit, Categorie } from '../../core/services/product.service';
 import { OrderService, Commande } from '../../core/services/order.service';
 import {AuthService, UserApp} from '../../core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
@@ -28,6 +29,8 @@ export class AdminComponent implements OnInit {
     nom: '',
     prix: 0,
     quantiteStock: 0,
+    description: '',
+    imageUrl: '',
     categorie: { id: undefined, nom: '' }
   };
 
@@ -43,6 +46,7 @@ export class AdminComponent implements OnInit {
   statusDisponible= ['EN_ATTENTE', 'VALIDEE', 'EXPEDIEE', 'LIVREE', 'ANNULEE'];
 
   constructor(
+    private http: HttpClient,
     private productService: ProductService,
     private orderService: OrderService,
     public authService: AuthService,
@@ -89,6 +93,45 @@ export class AdminComponent implements OnInit {
 
   }
 
+  uploadingImage: boolean = false;
+
+  onFileSelected(event: any, cible: any): void {
+    const file: File = event.target.files?.[0];
+
+    if (!file) {
+      this.uploadingImage = false;
+      return;
+    }
+
+    this.uploadingImage = true;
+    this.messageErreur = '';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // 👈 Option responseType: 'json' par défaut avec typage explicit
+    this.http.post<any>('/api/images/upload', formData).subscribe({
+      next: (res: any) => {
+        console.log('Réponse du serveur upload :', res);
+
+        // On gère aussi bien si Spring renvoie { imageUrl: "..." } ou du texte
+        const url = typeof res === 'string' ? res : (res?.imageUrl || res?.url);
+
+        if (cible && url) {
+          cible.imageUrl = url;
+        }
+
+        this.uploadingImage = false; // ✅ DÉBLOQUE LE BOUTON
+      },
+      error: (err: any) => {
+        console.error("Détail de l'erreur d'upload (Frontend) :", err);
+        // Affiche le message d'erreur exact du serveur s'il existe
+        const detailMsg = err.error?.error || err.message || "Erreur lors du téléversement.";
+        this.messageErreur = `Erreur téléversement : ${detailMsg}`;
+        this.uploadingImage = false; // ✅ DÉBLOQUE LE BOUTON
+      }
+    });
+  }
   // --- GESTION DES COMMANDES ---
   changerStatut(commandeId: number, nouveauStatut: string): void {
     // 1. Demande de confirmation à l'administrateur
@@ -173,8 +216,13 @@ export class AdminComponent implements OnInit {
     }
 
     this.messageErreur = '';
+    this.messageSucces = '';
+
+    // Construction propre du payload avec image et description
     const payload: Produit = {
       ...this.nouveauProduit,
+      description: this.nouveauProduit.description?.trim() || '',
+      imageUrl: this.nouveauProduit.imageUrl?.trim() || '',
       categorie: { id: Number(this.selectedCategorieId), nom: '' }
     };
 
@@ -185,7 +233,11 @@ export class AdminComponent implements OnInit {
           this.reinitialiserFormulaire();
           this.chargerDonnees();
         },
-        error: (err) => this.messageErreur = 'Erreur lors de la modification.'
+        error: (err) => {
+          console.error('Erreur modification produit :', err);
+          this.messageErreur = 'Erreur lors de la modification du produit.';
+          this.uploadingImage = false;
+        }
       });
     } else {
       this.productService.ajouterProduit(payload).subscribe({
@@ -194,7 +246,11 @@ export class AdminComponent implements OnInit {
           this.reinitialiserFormulaire();
           this.chargerDonnees();
         },
-        error: (err) => this.messageErreur = 'Erreur lors de l\'ajout.'
+        error: (err) => {
+          console.error('Erreur ajout produit :', err);
+          this.messageErreur = 'Erreur lors de l\'ajout du produit.';
+          this.uploadingImage = false;
+        }
       });
     }
   }
@@ -202,7 +258,13 @@ export class AdminComponent implements OnInit {
   editerProduit(produit: Produit): void {
     this.modeEdition = true;
     this.produitEnEditionId = produit.id || null;
-    this.nouveauProduit = { ...produit };
+
+    this.nouveauProduit = {
+      ...produit,
+      description: produit.description || '',
+      imageUrl: produit.imageUrl || ''
+    };
+
     this.selectedCategorieId = produit.categorie?.id || null;
   }
 
@@ -223,10 +285,13 @@ export class AdminComponent implements OnInit {
     this.modeEdition = false;
     this.produitEnEditionId = null;
     this.selectedCategorieId = null;
+    this.uploadingImage = false;
     this.nouveauProduit = {
       nom: '',
       prix: 0,
-      quantiteStock: 0
+      quantiteStock: 0,
+      description: '',
+      imageUrl: ''
     };
   }
 

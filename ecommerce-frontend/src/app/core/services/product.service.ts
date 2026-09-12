@@ -10,8 +10,10 @@ export interface Categorie {
 export interface Produit {
   id?: number;
   nom: string;
+  description?: string;
   prix: number;
   quantiteStock: number;
+  imageUrl?: string;
   categorie?: Categorie;
 }
 
@@ -43,6 +45,10 @@ export class ProductService {
 
   ajouterProduit(produit: Produit): Observable<Produit> {
     return this.http.post<Produit>(`${this.apiUrl}/produits`, produit);
+  }
+
+  getProduitById(id: number): Observable<Produit> {
+    return this.http.get<Produit>(`${this.apiUrl}/produits/${id}`);
   }
 
   modifierProduit(id: number, produit: Produit): Observable<Produit> {

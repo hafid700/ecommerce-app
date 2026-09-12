@@ -1,5 +1,6 @@
 package com.example.ecommerceapp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,10 +11,16 @@ public class Produit {
 
     private String nom;
 
+    @Column(columnDefinition = "TEXT")
+    @JsonProperty("description")
+    private String description;
+
     private Double prix=0.0;
 
     private Integer quantiteStock=0;
 
+    @Column(name = "image_url")
+    @JsonProperty("imageUrl")
     private String imageUrl;
 
     @ManyToOne
@@ -34,6 +41,9 @@ public class Produit {
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
     public Double getPrix() { return prix; }
     public void setPrix(Double prix) { this.prix = prix; }
 
@@ -42,4 +52,13 @@ public class Produit {
 
     public Integer getQuantiteStock() { return quantiteStock; }
     public void setQuantiteStock(Integer quantiteStock) { this.quantiteStock = quantiteStock; }
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

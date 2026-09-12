@@ -5,6 +5,7 @@ import { AdminComponent } from './features/admin/admin.component';
 import {CartComponent} from "./features/cart/cart.component";
 import {RegisterComponent} from "./features/auth/register/register.component";
 import {UserDashboardComponent} from "./features/user-dashboard/user-dashboard.component";
+import {ProductDetailComponent} from "./features/product-detail/product-detail.component";
 
 export const routes: Routes = [
   { path: '', component: CatalogComponent },
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {path: 'register', component: RegisterComponent},
   { path: 'profile', component: UserDashboardComponent},
+  { path: 'product/:id', component: ProductDetailComponent },
   { path: 'admin', component: AdminComponent },
   { path: '**', redirectTo: 'catalog' }
 ];

@@ -4,6 +4,7 @@ import com.example.ecommerceapp.exception.ResourceNotFoundException;
 import com.example.ecommerceapp.model.Produit;
 import com.example.ecommerceapp.repository.ProduitRepository;
 import com.example.ecommerceapp.service.ProduitService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,26 +33,48 @@ public class ProduitController {
         return produitService.ProduitsParCategorie(id);
     }
 
+    // Requête GET pour LIRE un produit spécifique par son ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Produit> obtenirProduitParId(@PathVariable Long id) {
+        Produit produit = produitService.obtenirProduitParId(id);
+        return ResponseEntity.ok(produit);
+    }
+
     @GetMapping
     public List<Produit> obtenirTousLesProduits() {
         return produitService.obtenirTousLesProduits();
     }
 
     @PutMapping("/{id}")
-    public Produit modifierProduit(@PathVariable Long id,@RequestBody Produit produitModifie) {
+    public Produit modifierProduit(@PathVariable Long id, @RequestBody Produit produitModifie) {
         return produitRepository.findById(id)
                 .map(produit -> {
-                    produit.setNom(produitModifie.getNom());
-                    produit.setPrix(produitModifie.getPrix());
-
-                    // Mettre à jour la catégorie si elle est fournie
-                    if (produitModifie.getCategorie() != null) {
-                        produit.setCategorie(produitModifie.getCategorie());
+                    // 1. Nom & Prix
+                    if (produitModifie.getNom() != null) {
+                        produit.setNom(produitModifie.getNom());
+                    }
+                    if (produitModifie.getPrix() != null) {
+                        produit.setPrix(produitModifie.getPrix());
                     }
 
-                    // 👈 NOUVEAU : Mettre à jour le stock seulement s'il est précisé dans la requête
+                    // 2. 👈 NOUVEAU : Description
+                    if (produitModifie.getDescription() != null) {
+                        produit.setDescription(produitModifie.getDescription());
+                    }
+
+                    // 3. 👈 NOUVEAU : URL de l'image
+                    if (produitModifie.getImageUrl() != null) {
+                        produit.setImageUrl(produitModifie.getImageUrl());
+                    }
+
+                    // 4. Stock
                     if (produitModifie.getQuantiteStock() != null) {
                         produit.setQuantiteStock(produitModifie.getQuantiteStock());
+                    }
+
+                    // 5. Catégorie
+                    if (produitModifie.getCategorie() != null) {
+                        produit.setCategorie(produitModifie.getCategorie());
                     }
 
                     return produitRepository.save(produit);

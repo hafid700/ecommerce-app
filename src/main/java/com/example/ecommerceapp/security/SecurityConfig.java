@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        .requestMatchers("/api/images/**", "/images/**").permitAll()
                         // Consultation publique du catalogue (GET)
                         .requestMatchers(HttpMethod.GET, "/produits/**", "/categories/**").permitAll()
 

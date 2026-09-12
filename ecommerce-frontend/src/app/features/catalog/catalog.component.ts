@@ -94,6 +94,12 @@ export class CatalogComponent implements OnInit {
     this.appliquerFiltres();
   }
 
+  voirDetail(id: number): void {
+    if (id) {
+      this.router.navigate(['/product', id]);
+    }
+  }
+
   // 📄 Getters pour la Pagination
   get produitsPagines(): Produit[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
