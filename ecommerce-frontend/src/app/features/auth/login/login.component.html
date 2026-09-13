@@ -1,24 +1,49 @@
-<div style="max-width: 400px; margin: 50px auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
-  <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Connexion E-Commerce</h2>
-  
-  <div *ngIf="errorMessage" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem;">
-    {{ errorMessage }}
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Connexion</h2>
+      <p>Accédez à votre espace e-commerce</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="seConnecter()" class="login-form">
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="credentials.username"
+          name="username"
+          required
+          placeholder="Entrez votre nom d'utilisateur"
+          autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="credentials.password"
+          name="password"
+          required
+          placeholder="Entrez votre mot de passe"
+          autocomplete="current-password">
+      </div>
+
+      <button type="button" (click)="seConnecter()" class="btn-login">
+        Se connecter
+      </button>
+    </form>
+
+    <div class="register-section">
+      <p>Pas encore de compte ?</p>
+      <a routerLink="/register" class="btn-register">
+        S'inscrire
+      </a>
+    </div>
   </div>
-
-  <form (ngSubmit)="seConnecter()">
-    <div style="margin-bottom: 15px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Nom d'utilisateur</label>
-      <input type="text" [(ngModel)]="credentials.username" name="username" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-    </div>
-
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">Mot de passe</label>
-      <input type="password" [(ngModel)]="credentials.password" name="password" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-    </div>
-
-    <!-- type="button" et (click) pour empêcher tout rechargement HTML -->
-    <button type="button" (click)="seConnecter()" style="width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer;">
-      Se connecter
-    </button>
-  </form>
 </div>

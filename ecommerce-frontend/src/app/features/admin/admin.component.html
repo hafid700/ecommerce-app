@@ -1,59 +1,90 @@
 <div style="padding: 20px; max-width: 1100px; margin: 0 auto; font-family: Arial, sans-serif;">
 
-  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px;">
-    <h2>⚙️ Dashboard Administrateur</h2>
+  <header
+    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px;"
+  >
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+      <h2>Dashboard Administrateur</h2>
+    </div>
+
     <div style="display: flex; gap: 15px; align-items: center;">
-      <button routerLink="/catalog" style="padding: 8px 16px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        👁️ Voir le Catalogue
+      <button
+        routerLink="/catalog"
+        style="padding: 8px 16px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;"
+      >
+        <i class="fa-solid fa-eye"></i>
+        Voir le Catalogue
       </button>
-      <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+
+      <button
+        (click)="logout()"
+        style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
         Déconnexion
       </button>
     </div>
   </header>
 
-  <!-- 📌 BARRE D'ONGLETS DE NAVIGATION -->
-  <div style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+  <!-- BARRE D'ONGLETS DE NAVIGATION -->
+  <div
+    style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #ccc; padding-bottom: 10px;"
+  >
+    <!-- Produits -->
     <button
       (click)="activeTab = 'produits'"
       [style.background-color]="activeTab === 'produits' ? '#007bff' : '#f8f9fa'"
       [style.color]="activeTab === 'produits' ? 'white' : '#333'"
-      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      📦 Produits ({{ produits.length }})
+      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;"
+    >
+      <i class="fa-solid fa-box"></i>
+      Produits ({{ produits.length }})
     </button>
 
+    <!-- Catégories -->
     <button
       (click)="activeTab = 'categories'"
       [style.background-color]="activeTab === 'categories' ? '#007bff' : '#f8f9fa'"
       [style.color]="activeTab === 'categories' ? 'white' : '#333'"
-      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      📁 Catégories ({{ categories.length }})
+      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;"
+    >
+      <i class="fa-solid fa-folder"></i>
+      Catégories ({{ categories.length }})
     </button>
 
+    <!-- Commandes -->
     <button
       (click)="activeTab = 'commandes'"
       [style.background-color]="activeTab === 'commandes' ? '#007bff' : '#f8f9fa'"
       [style.color]="activeTab === 'commandes' ? 'white' : '#333'"
-      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      🛒 Commandes ({{ commandes.length }})
+      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;"
+    >
+      <i class="fa-solid fa-cart-shopping"></i>
+      Commandes ({{ commandes.length }})
     </button>
 
+    <!-- Utilisateurs -->
     <button
       (click)="activeTab = 'users'"
       [style.background-color]="activeTab === 'users' ? '#007bff' : '#f8f9fa'"
       [style.color]="activeTab === 'users' ? 'white' : '#333'"
-      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      👥 Utilisateurs ({{ users.length }})
+      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;"
+    >
+      <i class="fa-solid fa-users"></i>
+      Utilisateurs ({{ users.length }})
     </button>
 
+    <!-- KPIs -->
     <button
       (click)="activeTab = 'kpis'"
       [style.background-color]="activeTab === 'kpis' ? '#007bff' : '#f8f9fa'"
       [style.color]="activeTab === 'kpis' ? 'white' : '#333'"
-      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">
-      📊 Vue d'Ensemble & KPIs
+      style="padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;"
+    >
+      <i class="fa-solid fa-chart-column"></i>
+      Vue d'Ensemble & KPIs
     </button>
-
   </div>
 
   <!-- Messages de notification -->
@@ -65,10 +96,13 @@
   </div>
 
   <!-- ------------------------------------------------------------- -->
-  <!-- 🛒 ONGLET 3 : GESTION DES COMMANDES -->
+  <!-- ONGLET : GESTION DES COMMANDES -->
   <!-- ------------------------------------------------------------- -->
   <div *ngIf="activeTab === 'commandes'">
-    <h3>🛒 Gestion Globale des Commandes</h3>
+    <h3>
+      <i class="fa-solid fa-cart-shopping"></i>
+      Gestion Globale des Commandes
+    </h3>
 
     <div *ngIf="commandes.length === 0" style="text-align: center; padding: 30px; border: 1px dashed #ccc; border-radius: 8px;">
       Aucune commande enregistrée pour le moment.
@@ -82,19 +116,21 @@
         <div>
           <span style="font-size: 1.1rem; font-weight: bold;">Commande #{{ cmd.id }}</span>
 
-          <!-- 📅 Date et Heure -->
+          <!-- Date et Heure -->
           <span style="font-size: 0.85rem; color: #17a2b8; margin-left: 15px;">
-          📅 {{ cmd.dateCommande ? (cmd.dateCommande | date:'dd/MM/yyyy HH:mm') : 'Date N/A' }}
-        </span>
+            <i class="fa-solid fa-calendar"></i>
+            {{ cmd.dateCommande ? (cmd.dateCommande | date:'dd/MM/yyyy HH:mm') : 'Date N/A' }}
+          </span>
 
-          <!-- 👤 Informations de base Client -->
+          <!-- Informations Client -->
           <div style="font-size: 0.85rem; color: #ccc; margin-top: 4px;">
-            👤 Client : <strong>{{ cmd.client?.prenom }} {{ cmd.client?.nom || 'Client Anonyme' }}</strong>
+            <i class="fa-solid fa-user"></i>
+            Client : <strong>{{ cmd.client?.prenom }} {{ cmd.client?.nom || 'Client Anonyme' }}</strong>
             <span *ngIf="cmd.client?.email">({{ cmd.client?.email }})</span>
           </div>
         </div>
 
-        <!-- ⚙️ Changement de Statut & Total -->
+        <!-- Changement de Statut & Total -->
         <div style="display: flex; align-items: center; gap: 10px;">
           <label style="font-size: 0.9rem;">Statut :</label>
           <select
@@ -105,34 +141,35 @@
           </select>
 
           <span style="font-weight: bold; color: #28a745; margin-left: 10px; font-size: 1.1rem;">
-          {{ calculerTotalCommande(cmd) }} DHS
-        </span>
+            {{ calculerTotalCommande(cmd) }} DHS
+          </span>
         </div>
-
       </div>
 
-      <!-- 🚚 Bloc Informations de Livraison (COD) & Action Agent WhatsApp -->
+      <!-- Bloc Informations de Livraison (COD) & WhatsApp -->
       <div *ngIf="cmd.client" style="background-color: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #ddd; font-size: 0.9rem; color: #333; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
 
         <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; flex-grow: 1;">
           <div>
-            📞 <strong>Téléphone :</strong>
+            <i class="fa-solid fa-phone"></i>
+            <strong>Téléphone :</strong>
             <span style="font-weight: bold; color: #007bff;">{{ cmd.client.telephone || 'Non renseigné' }}</span>
           </div>
           <div style="flex-grow: 1;">
-            📍 <strong>Adresse de livraison :</strong>
+            <i class="fa-solid fa-location-dot"></i>
+            <strong>Adresse de livraison :</strong>
             <span>{{ cmd.client.adresse || 'Non renseignée' }}</span>
           </div>
         </div>
 
-        <!-- 💬 Bouton WhatsApp pour l'Agent Admin -->
+        <!-- Bouton WhatsApp -->
         <a *ngIf="cmd.client.telephone"
            [href]="'https://wa.me/' + cmd.client.telephone + '?text=Bonjour%20' + (cmd.client.prenom || cmd.client.nom) + ',%20nous%20confirmons%20votre%20commande%20%23' + cmd.id + '%20de%20' + calculerTotalCommande(cmd) + '%20DHS.'"
            target="_blank"
            style="background-color: #25D366; color: white; padding: 6px 14px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          💬 Confirmer sur WhatsApp
+          <i class="fa-brands fa-whatsapp"></i>
+          Confirmer sur WhatsApp
         </a>
-
       </div>
 
       <!-- Articles de la commande -->
@@ -156,16 +193,18 @@
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
 
   <!-- ------------------------------------------------------------- -->
-  <!-- 📁 ONGLET 1 : GESTION DES CATÉGORIES -->
+  <!-- ONGLET : GESTION DES CATÉGORIES -->
   <!-- ------------------------------------------------------------- -->
   <div *ngIf="activeTab === 'categories'">
     <div style="background-color: #f8f9fa; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-      <h3>➕ Ajouter une Nouvelle Catégorie</h3>
+      <h3>
+        <i class="fa-solid fa-plus"></i>
+        Ajouter une Nouvelle Catégorie
+      </h3>
       <form (submit)="enregistrerCategorie(); $event.preventDefault();" style="display: flex; gap: 15px; align-items: end;">
         <div style="flex: 1;">
           <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nom de la catégorie</label>
@@ -177,7 +216,10 @@
       </form>
     </div>
 
-    <h3>📂 Liste des Catégories</h3>
+    <h3>
+      <i class="fa-solid fa-folder"></i>
+      Liste des Catégories
+    </h3>
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
       <thead>
       <tr style="background-color: #343a40; color: white; text-align: left;">
@@ -201,12 +243,15 @@
   </div>
 
   <!-- ------------------------------------------------------------- -->
-  <!-- 📦 ONGLET 2 : GESTION DES PRODUITS -->
+  <!-- ONGLET : GESTION DES PRODUITS -->
   <!-- ------------------------------------------------------------- -->
   <div *ngIf="activeTab === 'produits'">
     <!-- Formulaire Produit -->
     <div style="background-color: #f8f9fa; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-      <h3>{{ modeEdition ? '✏️ Modifier le Produit' : '➕ Ajouter un Nouveau Produit' }}</h3>
+      <h3>
+        <i class="fa-solid" [ngClass]="modeEdition ? 'fa-pen' : 'fa-plus'"></i>
+        {{ modeEdition ? 'Modifier le Produit' : 'Ajouter un Nouveau Produit' }}
+      </h3>
 
       <form (submit)="enregistrerProduit(); $event.preventDefault();" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
 
@@ -233,51 +278,46 @@
           </select>
         </div>
 
-        <!-- 📝 Champ Description (Largeur complète) -->
+        <!-- Champ Description -->
         <div style="grid-column: 1 / -1;">
           <label style="display: block; font-weight: bold; margin-bottom: 5px;">Description détaillée</label>
           <textarea [(ngModel)]="nouveauProduit.description" name="description" rows="3" placeholder="Description courte du produit..." style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
         </div>
 
-        <!-- 🖼️ Champ Upload & URL Image (Largeur complète) -->
+        <!-- Champ Upload & URL Image -->
         <div style="grid-column: 1 / -1; background-color: #fff; padding: 15px; border: 1px dashed #ced4da; border-radius: 6px;">
-          <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #495057;">📷 Photo du produit</label>
+          <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #495057;">
+            <i class="fa-solid fa-camera"></i>
+            Photo du produit
+          </label>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: center;">
-            <!-- Option A : Téléverser un fichier local -->
+            <!-- Option A : Fichier local -->
             <div style="margin-bottom: 15px;">
               <label style="font-weight: bold; display: block; margin-bottom: 5px;">Photo du produit (Fichier local) :</label>
-
               <input type="file" (change)="onFileSelected($event, nouveauProduit)" accept="image/*" style="margin-bottom: 10px;">
 
               <!-- Aperçu dynamique -->
-              <!-- Aperçu dynamique de la photo -->
               <div *ngIf="nouveauProduit.imageUrl" style="margin-top: 12px; display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef;">
-
                 <img [src]="nouveauProduit.imageUrl"
                      (error)="$any($event.target).src = 'https://via.placeholder.com/150?text=Erreur+Chargement'"
                      alt="Aperçu du produit"
                      style="height: 70px; width: 70px; object-fit: contain; border: 1px solid #ced4da; border-radius: 6px; background: #fff;">
-
                 <div>
-                  <span style="font-size: 0.85rem; color: #28a745; font-weight: bold; display: block;">✔️ Image configurée avec succès !</span>
+                  <span style="font-size: 0.85rem; color: #28a745; font-weight: bold; display: block;">
+                    <i class="fa-solid fa-check"></i>
+                    Image configurée avec succès !
+                  </span>
                   <small style="font-size: 0.75rem; color: #6c757d; word-break: break-all;">{{ nouveauProduit.imageUrl }}</small>
                 </div>
-
               </div>
             </div>
 
-            <!-- Option B : URL Web directe -->
+            <!-- Option B : URL Web -->
             <div>
               <span style="font-size: 0.85rem; color: #6c757d; display: block; margin-bottom: 4px;">Ou coller une URL d'image :</span>
               <input type="text" [(ngModel)]="nouveauProduit.imageUrl" name="imageUrl" placeholder="https://..." style="width: 100%; padding: 7px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
             </div>
-          </div>
-
-          <!-- Aperçu dynamique de la photo -->
-          <div *ngIf="nouveauProduit.imageUrl" style="margin-top: 12px; display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 8px; border-radius: 4px;">
-            <img [src]="nouveauProduit.imageUrl" alt="Aperçu" style="height: 60px; width: 60px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background: #fff;">
-            <span style="font-size: 0.85rem; color: #28a745; font-weight: bold;">✔️ Image configurée avec succès !</span>
           </div>
         </div>
 
@@ -286,69 +326,72 @@
           <button type="submit"
                   [disabled]="uploadingImage"
                   style="flex: 1; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
-            {{ uploadingImage ? '⏳ Upload de l\'image...' : (modeEdition ? '🔄 Mettre à jour' : '➕ Ajouter') }}
-            </button>
+            <i class="fa-solid" [ngClass]="uploadingImage ? 'fa-spinner fa-spin' : (modeEdition ? 'fa-rotate' : 'fa-plus')"></i>
+            {{ uploadingImage ? 'Upload de l\'image...' : (modeEdition ? 'Mettre à jour' : 'Ajouter') }}
+          </button>
           <button *ngIf="modeEdition" type="button" (click)="reinitialiserFormulaire()" style="padding: 12px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
             Annuler
           </button>
         </div>
-
       </form>
+
+      <!-- Table des Produits -->
+      <h3>
+        <i class="fa-solid fa-box"></i>
+        Liste des Produits en Base
+      </h3>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+        <tr style="background-color: #343a40; color: white; text-align: left;">
+          <th style="padding: 10px;">Image</th>
+          <th style="padding: 10px;">ID</th>
+          <th style="padding: 10px;">Nom</th>
+          <th style="padding: 10px;">Prix</th>
+          <th style="padding: 10px;">Stock</th>
+          <th style="padding: 10px;">Catégorie</th>
+          <th style="padding: 10px;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of produits" style="border-bottom: 1px solid #ddd; vertical-align: middle;">
+          <td style="padding: 10px;">
+            <img [src]="p.imageUrl || 'https://via.placeholder.com/50?text=No+Img'"
+                 (error)="$any($event.target).src = 'https://via.placeholder.com/50?text=No+Img'"
+                 [alt]="p.nom"
+                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ced4da; background-color: #fff; display: block;">
+          </td>
+          <td style="padding: 10px;">#{{ p.id }}</td>
+          <td style="padding: 10px; font-weight: bold;">{{ p.nom }}</td>
+          <td style="padding: 10px;">{{ p.prix }} DHS</td>
+          <td style="padding: 10px;">
+            <span [style.color]="p.quantiteStock > 0 ? '#28a745' : '#dc3545'" style="font-weight: bold;">
+              {{ p.quantiteStock }}
+            </span>
+          </td>
+          <td style="padding: 10px;">{{ p.categorie?.nom || 'N/A' }}</td>
+          <td style="padding: 10px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <button (click)="editerProduit(p)" style="padding: 5px 10px; background-color: #ffc107; color: black; border: none; border-radius: 4px; cursor: pointer;">
+                Éditer
+              </button>
+              <button (click)="supprimerProduit(p.id)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Supprimer
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-
-  <!-- Table des Produits -->
-  <h3>📦 Liste des Produits en Base</h3>
-
-  <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-    <thead>
-    <tr style="background-color: #343a40; color: white; text-align: left;">
-      <th style="padding: 10px;">Image</th>
-      <th style="padding: 10px;">ID</th>
-      <th style="padding: 10px;">Nom</th>
-      <th style="padding: 10px;">Prix</th>
-      <th style="padding: 10px;">Stock</th>
-      <th style="padding: 10px;">Catégorie</th>
-      <th style="padding: 10px;">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let p of produits" style="border-bottom: 1px solid #ddd; vertical-align: middle;">
-      <!-- 🖼️ Colonne Aperçu Image -->
-      <td style="padding: 10px;">
-        <img [src]="p.imageUrl || 'https://via.placeholder.com/50?text=No+Img'"
-             (error)="$any($event.target).src = 'https://via.placeholder.com/50?text=No+Img'"
-             [alt]="p.nom"
-             style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ced4da; background-color: #fff; display: block;">
-      </td>
-
-      <td style="padding: 10px;">#{{ p.id }}</td>
-      <td style="padding: 10px; font-weight: bold;">{{ p.nom }}</td>
-      <td style="padding: 10px;">{{ p.prix }} DHS</td>
-      <td style="padding: 10px;">
-        <span [style.color]="p.quantiteStock > 0 ? '#28a745' : '#dc3545'" style="font-weight: bold;">
-          {{ p.quantiteStock }}
-        </span>
-      </td>
-      <td style="padding: 10px;">{{ p.categorie?.nom || 'N/A' }}</td>
-      <td style="padding: 10px;">
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <button (click)="editerProduit(p)" style="padding: 5px 10px; background-color: #ffc107; color: black; border: none; border-radius: 4px; cursor: pointer;">
-            Éditer
-          </button>
-          <button (click)="supprimerProduit(p.id)" style="padding: 5px 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Supprimer
-          </button>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-
-  <!-- 👥 ONGLET 4 : GESTION DES UTILISATEURS -->
+  <!-- ONGLET : GESTION DES UTILISATEURS -->
   <div *ngIf="activeTab === 'users'">
-    <h3>👥 Liste des Utilisateurs / Clients Inscrits</h3>
+    <h3>
+      <i class="fa-solid fa-users"></i>
+      Liste des Utilisateurs / Clients Inscrits
+    </h3>
 
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
       <thead>
@@ -373,60 +416,61 @@
             {{ u.role || 'ROLE_USER' }}
           </span>
         </td>
-
-        <!-- 📦 Nombre de commandes passées -->
         <td style="padding: 12px; text-align: center;">
           <span style="background-color: #e9ecef; color: #495057; padding: 4px 10px; border-radius: 12px; font-weight: bold;">
-            📦 {{ getNombreCommandesUser(u.email) }}
+            <i class="fa-solid fa-box"></i>
+            {{ getNombreCommandesUser(u.email) }}
           </span>
         </td>
-
-        <!-- 💰 Total dépensé par ce client -->
         <td style="padding: 12px; text-align: right; font-weight: bold; color: #28a745;">
           {{ getTotalDepenseUser(u.email) }} DHS
         </td>
-
       </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- 📊 ONGLET : 5  KPIs / DASHBOARD -->
+  <!-- ONGLET : KPIs / DASHBOARD -->
   <div *ngIf="activeTab === 'kpis'">
-    <h3 style="margin-bottom: 20px;">📊 Indicateurs Clés de Performance (KPIs)</h3>
+    <h3 style="margin-bottom: 20px;">
+      <i class="fa-solid fa-chart-column"></i>
+      Indicateurs Clés de Performance (KPIs)
+    </h3>
 
     <!-- Grille des Cartes KPIs -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
 
-      <!-- Carte 1 : Chiffre d'Affaires -->
+      <!-- Chiffre d'Affaires -->
       <div style="background-color: #28a745; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <div style="font-size: 0.9rem; text-transform: uppercase; font-weight: bold; opacity: 0.9;">Chiffre d'Affaires</div>
         <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">{{ chiffreAffairesTotal }} DHS</div>
       </div>
 
-      <!-- Carte 2 : Total Commandes -->
+      <!-- Total Commandes -->
       <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <div style="font-size: 0.9rem; text-transform: uppercase; font-weight: bold; opacity: 0.9;">Total Commandes</div>
         <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">{{ commandes.length }}</div>
       </div>
 
-      <!-- Carte 3 : Commandes Confirmées / Validées -->
+      <!-- Confirmées / Validées -->
       <div style="background-color: #17a2b8; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <div style="font-size: 0.9rem; text-transform: uppercase; font-weight: bold; opacity: 0.9;">Confirmées / Validées</div>
         <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">{{ nbCommandesValidees }}</div>
       </div>
 
-      <!-- Carte 4 : Commandes Annulées -->
+      <!-- Commandes Annulées -->
       <div style="background-color: #dc3545; color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <div style="font-size: 0.9rem; text-transform: uppercase; font-weight: bold; opacity: 0.9;">Commandes Annulées</div>
         <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">{{ nbCommandesAnnulees }}</div>
       </div>
-
     </div>
 
     <!-- Section Alerte Stock -->
     <div style="background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 20px; border-radius: 8px;">
-      <h4 style="margin-top: 0; color: #856404;">⚠️ Produits Proches de la Rupture de Stock (<= 5 unités)</h4>
+      <h4 style="margin-top: 0; color: #856404;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Produits Proches de la Rupture de Stock (<= 5 unités)
+      </h4>
 
       <div *ngIf="produitsAlerteStock.length === 0" style="font-style: italic;">
         Tous les produits disposent d'un niveau de stock suffisant !
@@ -449,5 +493,5 @@
         </tbody>
       </table>
     </div>
-
   </div>
+</div>

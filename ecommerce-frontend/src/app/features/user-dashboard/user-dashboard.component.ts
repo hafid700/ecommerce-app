@@ -8,7 +8,8 @@ import { AuthService } from '../../core/services/auth.service';
   selector: 'app-user-dashboard',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './user-dashboard.component.html'
+  templateUrl: './user-dashboard.component.html',
+  styleUrls: ['./user-dashboard.component.scss']
 })
 export class UserDashboardComponent implements OnInit {
   commandes: Commande[] = [];

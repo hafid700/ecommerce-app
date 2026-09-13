@@ -1,69 +1,85 @@
-<div style="padding: 20px; max-width: 1200px; margin: 0 auto; font-family: Arial, sans-serif;">
+<div class="catalog-container">
 
   <!-- En-tête Navigation -->
-  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-    <h2 style="margin: 0; color: #333;">🛍️ Catalogue Produits</h2>
+  <header class="catalog-header">
+    <div class="brand-title">
+      <i class="fa-solid fa-house text-blue-600 text-2xl"></i>
+      <h2>Catalogue Produits</h2>
+    </div>
 
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <button routerLink="/cart" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-        🛒 Panier ({{ cartService.getNombreArticles() }})
+    <div class="header-actions">
+      <!-- Bouton Panier avec Badge -->
+      <button routerLink="/cart" class="btn btn-cart">
+        <span class="icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </span>
+
+        <span>Panier</span>
+        <span class="cart-badge" *ngIf="cartService.getNombreArticles() > 0">
+          {{ cartService.getNombreArticles() }}
+        </span>
       </button>
 
       <ng-container *ngIf="authService.isLoggedIn(); else visitorButtons">
-        <button routerLink="/profile" style="padding: 8px 16px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-          👤 Mon Profil
+        <button routerLink="/profile" class="btn btn-secondary">
+          <i class="fa-solid fa-user"></i>
+          Mon Profil
         </button>
-        <button *ngIf="authService.isAdmin()" routerLink="/admin" style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-          ⚙️ Admin
+
+
+        <button *ngIf="authService.isAdmin()" routerLink="/admin" class="btn btn-admin">
+          <i class="fa-solid fa-gear"></i>
+          Admin
         </button>
-        <button (click)="logout()" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+
+
+        <button (click)="logout()" class="btn btn-danger">
           Déconnexion
         </button>
       </ng-container>
 
       <ng-template #visitorButtons>
-        <button routerLink="/login" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        <button routerLink="/login" class="btn btn-primary">
           Se connecter
         </button>
       </ng-template>
     </div>
   </header>
 
-  <!-- 🔍 Barre de Recherche et Filtres -->
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 25px; background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+  <section class="search-filter-section">
+    <div class="search-box">
 
-    <!-- Champ de recherche par mot-clé -->
-    <div style="flex: 1; min-width: 280px;">
+      <span class="search-icon">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </span>
+
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearchChange()"
-        placeholder="🔍 Rechercher un produit par nom..."
-        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;">
+        placeholder="Rechercher un produit par nom...">
     </div>
 
-    <!-- Filtres par catégorie -->
-    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+    <div class="categories-scroll">
       <button
         (click)="filtrerCategorie(null)"
-        [style.background-color]="selectedCategorieId === null ? '#007bff' : '#fff'"
-        [style.color]="selectedCategorieId === null ? 'white' : '#333'"
-        style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+        [class.active]="selectedCategorieId === null"
+        class="chip-button">
         Toutes
       </button>
       <button
         *ngFor="let cat of categories"
         (click)="filtrerCategorie(cat.id)"
-        [style.background-color]="selectedCategorieId === cat.id ? '#007bff' : '#fff'"
-        [style.color]="selectedCategorieId === cat.id ? 'white' : '#333'"
-        style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; font-weight: 500;">
+        [class.active]="selectedCategorieId === cat.id"
+        class="chip-button">
         {{ cat.nom }}
       </button>
     </div>
-  </div>
+  </section>
 
   <!-- État de chargement -->
-  <div *ngIf="loading" style="text-align: center; font-size: 1.2rem; margin: 50px 0; color: #666;">
+  <div *ngIf="loading" class="state-container">
+    <div class="spinner"></div>
     Chargement des articles...
   </div>
 
@@ -108,38 +124,36 @@
       </div>
 
       <button
-        (click)="ajouterAuPanier(p)"
+        (click)="$event.stopPropagation(); ajouterAuPanier(p)"
         [disabled]="p.quantiteStock <= 0"
-        style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 0.95rem; cursor: pointer;"
+        class="btn-add-cart"
         [style.opacity]="p.quantiteStock <= 0 ? '0.5' : '1'">
-        Ajouter au panier 🛒
+        <i class="fa-solid fa-star"></i>
+        Ajouter au panier
       </button>
     </div>
   </div>
 
   <!-- 📄 Barre de Pagination -->
-  <div *ngIf="!loading && totalPages > 1" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
-
+  <!-- 📄 Pagination Élégante -->
+  <nav *ngIf="!loading && totalPages > 1" class="pagination-container">
     <button
       (click)="changerPage(currentPage - 1)"
       [disabled]="currentPage === 1"
-      style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; cursor: pointer;"
-      [style.opacity]="currentPage === 1 ? '0.5' : '1'">
+      class="btn btn-pagination">
       ← Précédent
     </button>
 
-    <span style="font-weight: bold; color: #555;">
-      Page {{ currentPage }} sur {{ totalPages }}
+    <span class="pagination-info">
+      Page <strong>{{ currentPage }}</strong> sur {{ totalPages }}
     </span>
 
     <button
       (click)="changerPage(currentPage + 1)"
       [disabled]="currentPage === totalPages"
-      style="padding: 8px 14px; border: 1px solid #ccc; border-radius: 4px; background-color: #fff; cursor: pointer;"
-      [style.opacity]="currentPage === totalPages ? '0.5' : '1'">
+      class="btn btn-pagination">
       Suivant →
     </button>
-
-  </div>
+  </nav>
 
 </div>

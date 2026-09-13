@@ -10,7 +10,8 @@ import { Router, RouterLink } from '@angular/router';
   selector: 'app-cart',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
-  templateUrl: './cart.component.html'
+  templateUrl: './cart.component.html',
+  styleUrls: ['./cart.component.scss']
 })
 export class CartComponent {
   loading = false;

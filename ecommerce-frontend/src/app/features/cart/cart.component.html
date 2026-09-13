@@ -1,190 +1,161 @@
-<div style="padding: 20px; max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
+<div class="cart-container">
 
-  <!-- En-tête -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2>🛒 Mon Panier</h2>
-
-    <button
-      routerLink="/catalog"
-      style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      ← Continuer mes achats
-    </button>
-  </div>
-
-  <!-- Messages de notification -->
-  <div
-    *ngIf="messageSucces"
-    style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
-    {{ messageSucces }}
-  </div>
-
-  <div
-    *ngIf="messageErreur"
-    style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;">
-    {{ messageErreur }}
-  </div>
-
-
-  <!-- Panier vide -->
-  <div
-    *ngIf="(cartService.items$ | async)?.length === 0 && !messageSucces"
-    style="text-align: center; padding: 40px; border: 1px dashed #ccc; border-radius: 8px;">
-
-    <p style="font-size: 1.2rem; color: #666;">
-      Votre panier est vide.
-    </p>
-
-    <button
-      routerLink="/catalog"
-      style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      Découvrir nos produits
-    </button>
-  </div>
-
-  <!-- Contenu du panier -->
-  <div *ngIf="((cartService.items$ | async) ?? []).length > 0">
-
-    <!-- Tableau des produits -->
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-
-      <thead>
-      <tr style="border-bottom: 2px solid #ddd; text-align: left;">
-        <th style="padding: 10px;">Produit</th>
-        <th style="padding: 10px;">Prix unitaire</th>
-        <th style="padding: 10px;">Quantité</th>
-        <th style="padding: 10px;">Total</th>
-        <th style="padding: 10px;">Action</th>
-      </tr>
-      </thead>
-
-      <tbody>
-
-      <tr
-        *ngFor="let item of (cartService.items$ | async)"
-        style="border-bottom: 1px solid #eee;">
-
-        <!-- Produit -->
-        <td style="padding: 10px; font-weight: bold;">
-          {{ item.produit.nom }}
-        </td>
-
-        <!-- Prix -->
-        <td style="padding: 10px;">
-          {{ item.produit.prix }} DHS
-        </td>
-
-        <!-- Quantité -->
-        <td style="padding: 10px;">
-
-          <button
-            (click)="modifierQuantite(item, -1)"
-            style="padding: 2px 8px;">
-            -
-          </button>
-
-          <span style="margin: 0 10px; font-weight: bold;">
-              {{ item.quantite }}
-            </span>
-
-          <button
-            (click)="modifierQuantite(item, 1)"
-            style="padding: 2px 8px;">
-            +
-          </button>
-
-        </td>
-
-        <!-- Total produit -->
-        <td style="padding: 10px; font-weight: bold; color: #28a745;">
-          {{ item.produit.prix * item.quantite }} DHS
-        </td>
-
-        <!-- Suppression -->
-        <td style="padding: 10px;">
-          <button
-            (click)="supprimer(item)"
-            style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-            Supprimer
-          </button>
-        </td>
-
-      </tr>
-
-      </tbody>
-    </table>
-
-    <!-- Total et validation -->
-    <div
-      style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
-
-      <h3 style="margin: 0;">
-        Total du panier :
-        <span style="color: #28a745;">
-          {{ cartService.getCalculerTotal() }} DHS
-        </span>
-      </h3>
-
-      <button
-        (click)="validerCommande()"
-        [disabled]="loading"
-        [style.background-color]="authService.isLoggedIn() ? '#28a745' : '#ffc107'"
-        style="padding: 12px 24px; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1.1rem; cursor: pointer;">
-
-        <span *ngIf="loading">
-          Traitement en cours...
-        </span>
-
-        <span *ngIf="!loading && authService.isLoggedIn()">
-          Valider la commande 💳
-        </span>
-
-        <span
-          *ngIf="!loading && !authService.isLoggedIn()"
-          style="color: #212529;">
-          Se connecter pour valider 🔐
-        </span>
-
+  <!-- Header -->
+  <header class="cart-header">
+    <div class="header-left">
+      <button routerLink="/catalog" class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        <span>Catalogue</span>
       </button>
-
+      <h1>Mon panier</h1>
     </div>
 
+    <div class="items-count" *ngIf="((cartService.items$ | async) ?? []).length > 0">
+      {{ cartService.getNombreArticles() }}
+      {{ cartService.getNombreArticles() > 1 ? 'articles' : 'article' }}
+    </div>
+  </header>
 
+  <!-- Alerts -->
+  <div *ngIf="messageSucces" class="alert alert-success">
+    <div class="alert-content">{{ messageSucces }}</div>
   </div>
 
-  <!-- Formulaire d'Expédition COD -->
-  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #dee2e6;">
-    <h4 style="margin-bottom: 15px; color: #333;">🚚 Informations de Livraison (Paiement à la livraison)</h4>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-      <div>
-        <label style="font-weight: bold; font-size: 0.9rem;">Prénom *</label>
-        <input type="text" [(ngModel)]="livraison.prenom" placeholder="Votre prénom"
-               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
-      </div>
-      <div>
-        <label style="font-weight: bold; font-size: 0.9rem;">Nom *</label>
-        <input type="text" [(ngModel)]="livraison.nom" placeholder="Votre nom"
-               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
-      </div>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label style="font-weight: bold; font-size: 0.9rem;">Téléphone (WhatsApp) *</label>
-      <input type="tel" [(ngModel)]="livraison.telephone" placeholder="06XXXXXXXX"
-             style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;">
-    </div>
-
-    <div style="margin-top: 15px;">
-      <label style="font-weight: bold; font-size: 0.9rem;">Adresse de livraison complète *</label>
-      <textarea [(ngModel)]="livraison.adresse" rows="3" placeholder="Quartier, Rue, N° d'appartement, Ville..."
-                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;"></textarea>
-    </div>
+  <div *ngIf="messageErreur" class="alert alert-danger">
+    <div class="alert-content">{{ messageErreur }}</div>
   </div>
 
-  <button (click)="validerCommande()"
-          [disabled]="loading"
-          style="width: 100%; margin-top: 20px; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
-    💵 Valider la commande (Paiement à la livraison)
-  </button>
+  <!-- Empty state -->
+  <div *ngIf="(cartService.items$ | async)?.length === 0 && !messageSucces" class="empty-state">
+    <div class="empty-illustration">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+    </div>
+    <h2>Votre panier est vide</h2>
+    <p>Parcourez notre sélection et trouvez ce qui vous plaît.</p>
+    <button routerLink="/catalog" class="btn-primary">
+      Découvrir les produits
+    </button>
+  </div>
 
+  <!-- Main layout -->
+  <div *ngIf="((cartService.items$ | async) ?? []).length > 0" class="cart-layout">
+
+    <!-- Left: Items -->
+    <section class="cart-items">
+      <h2 class="section-title">Articles</h2>
+
+      <div class="items-list">
+        <article *ngFor="let item of (cartService.items$ | async)" class="cart-item">
+
+          <div class="item-image">
+            <img [src]="item.produit.imageUrl || 'https://via.placeholder.com/120x120?text=Produit'"
+                 (error)="$any($event.target).src = 'https://via.placeholder.com/120x120?text=Produit'"
+                 [alt]="item.produit.nom">
+          </div>
+
+          <div class="item-info">
+            <span class="item-category">{{ item.produit.categorie?.nom || 'Général' }}</span>
+            <h3 class="item-name">{{ item.produit.nom }}</h3>
+            <div class="item-price">{{ item.produit.prix }} DHS <span>/ unité</span></div>
+          </div>
+
+          <div class="item-controls">
+            <div class="quantity">
+              <button (click)="modifierQuantite(item, -1)" [disabled]="item.quantite <= 1" aria-label="Diminuer">−</button>
+              <span>{{ item.quantite }}</span>
+              <button (click)="modifierQuantite(item, 1)" [disabled]="item.quantite >= item.produit.quantiteStock" aria-label="Augmenter">+</button>
+            </div>
+
+            <div class="item-subtotal">
+              {{ item.produit.prix * item.quantite }} <span>DHS</span>
+            </div>
+
+            <button (click)="supprimer(item)" class="btn-remove" title="Supprimer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Right: Summary + Form -->
+    <aside class="cart-sidebar">
+
+      <!-- Shipping form -->
+      <div class="card shipping-card">
+        <div class="card-header">
+          <span class="cod-badge">Paiement à la livraison</span>
+          <h3>Coordonnées de livraison</h3>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prenom">Prénom</label>
+            <input id="prenom" type="text" [(ngModel)]="livraison.prenom" placeholder="Mohamed">
+          </div>
+          <div class="form-group">
+            <label for="nom">Nom</label>
+            <input id="nom" type="text" [(ngModel)]="livraison.nom" placeholder="Alami">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telephone">Téléphone (WhatsApp)</label>
+          <div class="input-prefix">
+            <span>+212</span>
+            <input id="telephone" type="tel" [(ngModel)]="livraison.telephone" placeholder="6XX XXX XXX">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adresse">Adresse complète</label>
+          <textarea id="adresse" [(ngModel)]="livraison.adresse" rows="3"
+                    placeholder="Quartier, rue, numéro, ville..."></textarea>
+        </div>
+      </div>
+
+      <!-- Order summary -->
+      <div class="card summary-card">
+        <h3>Récapitulatif</h3>
+
+        <div class="summary-row">
+          <span>Sous-total</span>
+          <span>{{ cartService.getCalculerTotal() }} DHS</span>
+        </div>
+
+        <div class="summary-row">
+          <span>Livraison</span>
+          <span class="free">Gratuite</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-total">
+          <span>Total à payer</span>
+          <span class="amount">{{ cartService.getCalculerTotal() }} <small>DHS</small></span>
+        </div>
+
+        <button (click)="validerCommande()" [disabled]="loading" class="btn-checkout">
+          <span *ngIf="loading" class="spinner"></span>
+          <ng-container *ngIf="!loading">
+            <span *ngIf="authService.isLoggedIn()">Confirmer la commande</span>
+            <span *ngIf="!authService.isLoggedIn()">Se connecter pour commander</span>
+          </ng-container>
+        </button>
+
+        <p class="guarantee">
+          Vous ne payez qu’à la réception, après avoir vérifié votre colis.
+        </p>
+      </div>
+
+    </aside>
+  </div>
 </div>

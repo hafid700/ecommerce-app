@@ -1,78 +1,107 @@
-<div style="padding: 20px; max-width: 1000px; margin: 0 auto; font-family: Arial, sans-serif;">
+<div class="account-container">
 
-  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-    <h2>👤 Mon Espace Client</h2>
-    <button routerLink="/catalog" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      ← Retour au Catalogue
-    </button>
+  <!-- Header -->
+  <header class="account-header">
+    <div class="header-left">
+      <button routerLink="/catalog" class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        <span>Catalogue</span>
+      </button>
+      <h1>Mon espace client</h1>
+    </div>
   </header>
 
-  <!-- Infos Client -->
-  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #ddd;">
-    <h3 style="margin-top: 0;">Informations du Compte</h3>
-    <p><strong>Nom d'utilisateur :</strong> {{ (authService.currentUser$ | async)?.username }}</p>
-    <p><strong>Rôle :</strong> {{ (authService.currentUser$ | async)?.role }}</p>
-  </div>
-
-  <!-- Historique des Commandes -->
-  <h3>📦 Mon Historique de Commandes</h3>
-
-  <div *ngIf="loading" style="text-align: center; margin: 30px 0;">
-    Chargement de vos commandes...
-  </div>
-
-  <div *ngIf="!loading && commandes.length === 0" style="text-align: center; padding: 30px; border: 1px dashed #ccc; border-radius: 8px;">
-    <p>Vous n'avez pas encore passé de commande.</p>
-    <button routerLink="/catalog" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      Découvrir nos produits
-    </button>
-  </div>
-
-  <div *ngFor="let c of commandes" style="border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden;">
-
-    <!-- En-tête de commande -->
-    <div style="background-color: #e9ecef; padding: 12px 20px; display: flex; justify-content: space-between; font-weight: bold;">
-      <span>Commande #{{ c.id }}</span>
-      <span>Total : <span style="color: #28a745;">{{ calculerTotalCommande(c) }} DHS</span></span>
-    </div>
-
-    <!-- 🚚 Bloc Informations de Livraison (COD) -->
-    <div *ngIf="c.client" style="background-color: #f8f9fa; padding: 10px 20px; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; color: #495057;">
-      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
-        <div *ngIf="c.client.prenom || c.client.nom">
-          👤 <strong>Destinataire :</strong> {{ c.client.prenom }} {{ c.client.nom }}
-        </div>
-        <div *ngIf="c.client.telephone">
-          📞 <strong>Téléphone :</strong> {{ c.client.telephone }}
-        </div>
-        <div *ngIf="c.client.adresse" style="flex-grow: 1;">
-          📍 <strong>Adresse :</strong> {{ c.client.adresse }}
-        </div>
+  <!-- Infos compte -->
+  <section class="card profile-card">
+    <div class="profile-header">
+      <div class="avatar">
+        {{ ((authService.currentUser$ | async)?.username || 'U') | slice:0:1 | uppercase }}
+      </div>
+      <div class="profile-info">
+        <h2>{{ (authService.currentUser$ | async)?.username }}</h2>
+        <span class="role-badge">{{ (authService.currentUser$ | async)?.role }}</span>
       </div>
     </div>
+  </section>
 
-    <!-- Articles de la commande -->
-    <div style="padding: 15px;">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-        <tr style="text-align: left; border-bottom: 1px solid #ddd; color: #666; font-size: 0.9rem;">
-          <th style="padding: 8px 0;">Article</th>
-          <th style="padding: 8px 0;">Prix unitaire</th>
-          <th style="padding: 8px 0;">Quantité</th>
-          <th style="padding: 8px 0; text-align: right;">Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let line of c.lignes" style="border-bottom: 1px solid #f2f2f2;">
-          <td style="padding: 8px 0; font-weight: 500;">{{ line.produit.nom }}</td>
-          <td style="padding: 8px 0;">{{ line.produit.prix }} DHS</td>
-          <td style="padding: 8px 0;">x{{ line.quantite }}</td>
-          <td style="padding: 8px 0; text-align: right; font-weight: bold;">{{ line.produit.prix * line.quantite }} DHS</td>
-        </tr>
-        </tbody>
-      </table>
+  <!-- Historique -->
+  <section class="orders-section">
+    <h2 class="section-title">Historique des commandes</h2>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="state-message">
+      <div class="spinner"></div>
+      <p>Chargement de vos commandes...</p>
     </div>
 
-  </div>
+    <!-- Empty -->
+    <div *ngIf="!loading && commandes.length === 0" class="empty-state">
+      <div class="empty-illustration">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+      </div>
+      <h3>Aucune commande pour le moment</h3>
+      <p>Vos futures commandes apparaîtront ici.</p>
+      <button routerLink="/catalog" class="btn-primary">
+        Découvrir les produits
+      </button>
+    </div>
+
+    <!-- Liste des commandes -->
+    <div *ngIf="!loading && commandes.length > 0" class="orders-list">
+      <article *ngFor="let c of commandes" class="order-card">
+
+        <!-- En-tête commande -->
+        <div class="order-header">
+          <div class="order-id">
+            <span class="label">Commande</span>
+            <strong>#{{ c.id }}</strong>
+          </div>
+          <div class="order-total">
+            {{ calculerTotalCommande(c) }} <small>DHS</small>
+          </div>
+        </div>
+
+        <!-- Infos livraison -->
+        <div *ngIf="c.client" class="delivery-info">
+          <div class="info-row" *ngIf="c.client.prenom || c.client.nom">
+            <span class="info-label">Destinataire</span>
+            <span>{{ c.client.prenom }} {{ c.client.nom }}</span>
+          </div>
+          <div class="info-row" *ngIf="c.client.telephone">
+            <span class="info-label">Téléphone</span>
+            <span>{{ c.client.telephone }}</span>
+          </div>
+          <div class="info-row" *ngIf="c.client.adresse">
+            <span class="info-label">Adresse</span>
+            <span>{{ c.client.adresse }}</span>
+          </div>
+        </div>
+
+        <!-- Articles -->
+        <div class="order-items">
+          <div class="items-header">
+            <span>Article</span>
+            <span>Prix</span>
+            <span>Qté</span>
+            <span class="text-right">Total</span>
+          </div>
+
+          <div *ngFor="let line of c.lignes" class="item-row">
+            <span class="item-name">{{ line.produit.nom }}</span>
+            <span class="item-price">{{ line.produit.prix }} DHS</span>
+            <span class="item-qty">×{{ line.quantite }}</span>
+            <span class="item-total">{{ line.produit.prix * line.quantite }} DHS</span>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </section>
 
 </div>

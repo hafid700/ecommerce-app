@@ -10,7 +10,8 @@ import {CartService} from "../../core/services/cart.service";
   selector: 'app-catalog',
   standalone: true,
   imports: [CommonModule,FormsModule, RouterLink],
-  templateUrl: './catalog.component.html'
+  templateUrl: './catalog.component.html',
+  styleUrl: './catalog.component.scss'
 })
 export class CatalogComponent implements OnInit {
   produits: Produit[] = [];
