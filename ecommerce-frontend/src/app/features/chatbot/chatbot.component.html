@@ -1,0 +1,48 @@
+<div class="chatbot-wrapper">
+
+  <!-- Bouton Bulle Flottant -->
+  <button class="chat-trigger" (click)="toggleChat()">
+    <span *ngIf="!isOpen">💬</span>
+    <span *ngIf="isOpen">✖</span>
+  </button>
+
+  <!-- Fenêtre de Chat -->
+  <div class="chat-window" *ngIf="isOpen">
+    <header class="chat-header">
+      <div class="bot-info">
+        <span class="bot-avatar">🤖</span>
+        <div>
+          <h4>Assistant Virtuel</h4>
+          <span class="status-online">En ligne</span>
+        </div>
+      </div>
+      <button class="btn-close" (click)="toggleChat()">✖</button>
+    </header>
+
+    <main class="chat-body">
+      <div *ngFor="let msg of messages" class="message-bubble" [ngClass]="msg.sender">
+        <div class="bubble-content">{{ msg.text }}</div>
+        <span class="timestamp">{{ msg.timestamp | date:'HH:mm' }}</span>
+      </div>
+
+      <div *ngIf="loading" class="message-bubble bot loading">
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="chat-footer">
+      <input
+        type="text"
+        [(ngModel)]="inputMessage"
+        (keyup.enter)="envoyerMessage()"
+        placeholder="Posez une question..."
+        [disabled]="loading">
+      <button (click)="envoyerMessage()" [disabled]="!inputMessage.trim() || loading">
+        ➔
+      </button>
+    </footer>
+  </div>
+
+</div>

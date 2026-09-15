@@ -49,4 +49,36 @@ public class CartTools {
         return "Commande #" + c.getId() + " - Date : " + c.getDateCommande() +
                 " - Statut : " + c.getStatut() + " - Montant Total : " + c.getTotal() + " DHS.";
     }
+
+    @Tool(
+            name = "preparerAjoutPanier",
+            description = "Prépare l'ajout d'un produit au panier du client en vérifiant sa disponibilité et son ID."
+    )
+    public String preparerAjoutPanier(Long productId, int quantite) {
+        System.out.println("🤖 [Tool Call] Préparation ajout panier : Produit #" + productId + " x" + quantite);
+        return produitRepository.findById(productId)
+                .map(p -> {
+                    if (p.getQuantiteStock() < quantite) {
+                        return "STOCK_INSUFFISANT: Il ne reste que " + p.getQuantiteStock() + " unités de " + p.getNom();
+                    }
+
+                    String catJson = (p.getCategorie() != null)
+                            ? "{\"id\":" + p.getCategorie().getId() + ",\"nom\":\"" + p.getCategorie().getNom().replace("\"", "\\\"") + "\"}"
+                            : "null";
+
+                    String imgUrl = (p.getImageUrl() != null) ? p.getImageUrl() : "";
+
+                    // 🔑 Utilisation de Locale.US pour forcer le POINT décimal (ex: 8500.00 et non 8500,00)
+                    String produitJson = String.format(java.util.Locale.US,
+                            "{\"id\":%d,\"nom\":\"%s\",\"prix\":%.2f,\"quantiteStock\":%d,\"imageUrl\":\"%s\",\"categorie\":%s}",
+                            p.getId(), p.getNom().replace("\"", "\\\""), p.getPrix(), p.getQuantiteStock(), imgUrl, catJson
+                    );
+
+                    return "ADD_TO_CART_SUCCESS:" + produitJson + "|QUANTITE:" + quantite;
+                })
+                .orElse("PRODUIT_INTROUVABLE: Aucun produit trouvé avec l'ID #" + productId);
+    }
+
+
+
 }
