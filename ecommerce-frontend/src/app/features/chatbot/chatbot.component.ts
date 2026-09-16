@@ -45,6 +45,15 @@ export class ChatbotComponent {
       next: (res) => {
         let reponseNettoyee = res.reponse;
 
+        if (reponseNettoyee.includes('[ACTION:CLEAR_CART]')) {
+          reponseNettoyee = reponseNettoyee.replace('[ACTION:CLEAR_CART]', '').trim();
+
+          // 🔑 Vider le panier localStorage
+          this.cartService.viderPanier();
+          console.log('🛒 Panier vidé après commande réussie !');
+        }
+
+
         const matchAction = res.reponse.match(/\[ACTION:ADD_TO_CART:(.*?):(\d+)\]/s);
 
         if (matchAction) {
@@ -79,7 +88,5 @@ export class ChatbotComponent {
       }
     });
   }
-
-
 
 }
