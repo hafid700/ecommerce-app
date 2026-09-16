@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
@@ -32,10 +32,23 @@ export class ChatService {
     return guestId;
   }
 
+
   poserQuestion(question: string): Observable<{ conversationId: string; reponse: string }> {
-    return this.http.post<{ conversationId: string; reponse: string }>(this.apiUrl, {
-      conversationId: this.conversationId,
-      question
+    // 🔑 Récupération du token JWT stocké lors de la connexion
+    const token = this.authService.getToken();
+
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
     });
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.post<{ conversationId: string; reponse: string }>(
+      this.apiUrl,
+      { conversationId: this.conversationId, question },
+      { headers }
+    );
   }
 }

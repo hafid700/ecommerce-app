@@ -12,7 +12,6 @@ public class ProductTools {
 
     private final ProduitRepository produitRepository;
 
-
     public ProductTools(ProduitRepository produitRepository) {
         this.produitRepository = produitRepository;
     }

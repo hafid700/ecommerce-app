@@ -38,8 +38,11 @@ public class AgentService {
                             b. Ajoute IMPÉRATIVEMENT la balise d'action à la toute fin de ton message en insérant le PRODUIT_JSON exact sans le modifier :
                         
                             [ACTION:ADD_TO_CART:PRODUIT_JSON:QUANTITE]
+                            
+                        4.- Si l'outil 'suivreCommande' retourne 'NON_AUTORISE', demande gentiment au client de se connecter à son compte.
+                          - Si l'outil retourne 'ACCES_REFUSE', informe le client avec courtoisie qu'il ne peut consulter que ses propres commandes.
                      
-                        4. Reste courtois, clair, synthétique et réponds en français.
+                        5. Reste courtois, clair, synthétique et réponds en français.
                         """)
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(memory).build()
