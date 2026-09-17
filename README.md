@@ -22,32 +22,6 @@ Plateforme e-commerce professionnelle, robuste et intelligente. Elle combine une
 - Angular Router & HTTP Interceptor (Injection automatique du Token JWT)
 - SSR / Platform Checks (Compatibilité Node.js et navigateur)
 
-## 🤖 Architecture de l'Agent IA & RAG (Spring AI)
-
-L'application intègre un Agent Virtuel conversationnel e-commerce capable à la fois d'exécuter des actions métier (panier, profil, création de commande) et d'interroger la base de connaissances documentaire en temps réel.
-
-
-
-[ 💬 Question / Ordre du Client ]
-│
-▼
-[ 🤖 Agent Spring AI ]
-│
-┌──────────────────────┴──────────────────────┐
-▼                                             ▼
-┌───────────────────────────────┐             ┌───────────────────────────────┐
-│     🛠️ Action Tools           │             │      📚 Knowledge Tools       │
-│  (CartTools, UserTools)       │             │       (RAG Tool)              │
-├───────────────────────────────┤             ├───────────────────────────────┤
-│ • obtenirProfilClientActuel    │             │ • rechercherDocumentation     │
-│ • preparerAjoutPanier         │             │   └── Similarity Search       │
-│ • suivreCommande              │             │       (Qdrant VectorStore)    │
-│ • creerCommandeDirecte (COD)  │             └───────────────┬───────────────┘
-└───────────┬───────────────────┘                             │
-│                                                 │
-▼                                                 ▼
-[ 🗄️ PostgreSQL (JPA) ]                          [ ⚡ Qdrant (Embeddings) ]
-
 
 ### Principes Clés de l'Agent :
 
