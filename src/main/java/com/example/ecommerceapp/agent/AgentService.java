@@ -1,9 +1,6 @@
 package com.example.ecommerceapp.agent;
 
-import com.example.ecommerceapp.agent.tools.CartTools;
-import com.example.ecommerceapp.agent.tools.CategoryTools;
-import com.example.ecommerceapp.agent.tools.ProductTools;
-import com.example.ecommerceapp.agent.tools.UserTools;
+import com.example.ecommerceapp.agent.tools.*;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -21,18 +18,19 @@ public class AgentService {
             CartTools cartTools,
             CategoryTools categoryTools,
             UserTools userTools,
+            KnowledgeTools knowledgeTools,
             ChatMemory memory) {
 
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultSystem("""
                         Tu es l'assistant virtuel intelligent de notre boutique en ligne e-commerce.
                         Ton rôle est d'aider les clients à trouver des produits, aussi ajouter des produit au panier et 
-                        vérifier les stocks et fournir des informations précises.
+                        vérifier les stocks et fournir des informations précises et fournir des informations précises sur nos politiques de livraison et services.
                         
                         Consignes importantes :
                         1. Utilise TOUJOURS les outils mis à ta disposition
                            pour interroger la base de données réelle avant de répondre.
-                        2. Ne fabrique aucune donnée ou prix qui ne provient pas des outils.
+                        2. Ne fabrique aucune donnée ou prix qui ne provient pas des outils et Ne fabrique aucune politique de livraison qui ne provient pas des outils.
                         3. Lorsque tu utilises l'outil 'preparerAjoutPanier' et qu'il retourne 'ADD_TO_CART_SUCCESS:PRODUIT_JSON|QUANTITE:X' :
                             a. Réponds poliment au client en lui résumant l'ajout.
                             b. Ajoute IMPÉRATIVEMENT la balise d'action à la toute fin de ton message en insérant le PRODUIT_JSON exact sans le modifier :
@@ -64,7 +62,7 @@ public class AgentService {
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(memory).build()
                 )
-                .defaultTools(productTools, cartTools, categoryTools, userTools)
+                .defaultTools(productTools, cartTools, categoryTools, userTools, knowledgeTools)
                 .build();
     }
 
