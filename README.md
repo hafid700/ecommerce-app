@@ -14,7 +14,6 @@ Plateforme e-commerce professionnelle, robuste et intelligente. Elle combine une
 - Spring AI PDF Reader (`PagePdfDocumentReader` & `TokenTextSplitter` pour l'ingestion automatique de la documentation)
 - JWT (JSON Web Token) (Authentification stateless & Role-Based Access Control)
 - Maven
-- a
 
 ### Front-End (Angular 17+)
 - Angular 17+ (Architecture Standalone Components)
